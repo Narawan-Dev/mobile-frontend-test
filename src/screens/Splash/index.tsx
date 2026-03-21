@@ -5,7 +5,7 @@ import {
   View,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../../App';
+import { RootStackParamList } from '../../navigation/AppNavigator';
 import { styles } from './styles';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;

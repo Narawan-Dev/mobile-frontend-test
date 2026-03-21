@@ -9,7 +9,7 @@ import {
 import CustomAppText from '../../components/CustomAppText';
 import { styles } from './styles';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../../App';
+import { RootStackParamList } from '../../navigation/AppNavigator';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomAuthHeader from '../../components/CustomAuthHeader';
 import CustomFloatingInput from '../../components/CustomFloatingInput';

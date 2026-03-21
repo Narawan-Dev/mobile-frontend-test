@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import CustomAppText from '../../components/CustomAppText';
-import { RootStackParamList } from '../../../App';
+import { RootStackParamList } from '../../navigation/AppNavigator';
 import { styles } from './styles';
 import CustomHeaderArrow from '../../components/CustomHeaderArrow';
 
@@ -68,7 +68,7 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
         {
           text: 'ตกลง',
           onPress: () => {
-            navigation.popToTop();
+            navigation.navigate('MainTab');
           },
         },
       ]);
