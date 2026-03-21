@@ -1,0 +1,21 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/Prompt-Bold.ttf",
+      "sha1": "3780b5ecc1feb84c5c02baa905d080f862123861"
+    },
+    {
+      "path": "src/assets/fonts/Prompt-Medium.ttf",
+      "sha1": "86dc787f5e9226f8e2c41c806fb6d7f3da0482cf"
+    },
+    {
+      "path": "src/assets/fonts/Prompt-Regular.ttf",
+      "sha1": "309878c94d04897fcc4858299e0a52999812d044"
+    },
+    {
+      "path": "src/assets/fonts/Prompt-SemiBold.ttf",
+      "sha1": "fb7941f731a81a6bc19bf007abfd913e24d9a790"
+    }
+  ]
+}
