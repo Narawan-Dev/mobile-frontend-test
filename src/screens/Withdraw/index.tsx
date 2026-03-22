@@ -88,7 +88,7 @@ const WithdrawScreen = () => {
 
                 <View style={styles.infoRow}>
                   <CustomAppText style={styles.infoLabel}>Bank</CustomAppText>
-                  <CustomAppText style={styles.infoValue}>KBTG</CustomAppText>
+                  <CustomAppText style={styles.infoValue}>SCB</CustomAppText>
                 </View>
 
                 <View style={styles.infoRow}>

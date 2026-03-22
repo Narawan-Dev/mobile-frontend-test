@@ -24,7 +24,7 @@ const SplashScreen = ({ navigation }: Props) => {
       <StatusBar barStyle="light-content" backgroundColor="#3c1ecb" />
       <View style={styles.container}>
         <ImageBackground
-          source={require('../../assets/splash_bg.png')}
+          source={require('../../assets/images/splash_bg.png')}
           style={styles.background}
           resizeMode="cover"
         />

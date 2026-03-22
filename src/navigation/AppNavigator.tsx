@@ -12,7 +12,7 @@ export type RootStackParamList = {
   SignIn: undefined;
   Otp: { phone: string };
   Passcode: {
-    mode: 'create' | 'confirm';
+    mode: 'create' | 'confirmCreate' | 'reset' | 'confirmReset';
     initialPasscode?: string;
   };
   MainTab: undefined;

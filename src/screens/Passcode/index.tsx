@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -10,10 +10,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { CommonActions, useFocusEffect } from '@react-navigation/native';
 import CustomAppText from '../../components/CustomAppText';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { styles } from './styles';
-import CustomHeaderArrow from '../../components/CustomHeaderArrow';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Passcode'>;
 
@@ -23,16 +23,48 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isCreateMode = mode === 'create';
+  const isConfirmCreateMode = mode === 'confirmCreate';
+  const isResetMode = mode === 'reset';
+  const isConfirmResetMode = mode === 'confirmReset';
 
   const title = useMemo(() => {
-    return isCreateMode ? 'ตั้งรหัสผ่าน 6 หลัก' : 'ยืนยันรหัสผ่าน';
-  }, [isCreateMode]);
+    if (isCreateMode) return 'ตั้งรหัสผ่าน 6 หลัก';
+    if (isConfirmCreateMode) return 'ยืนยันรหัสผ่าน';
+    if (isResetMode) return 'ตั้ง PIN ใหม่';
+    return 'ยืนยัน PIN ใหม่';
+  }, [isCreateMode, isConfirmCreateMode, isResetMode]);
 
   const subtitle = useMemo(() => {
-    return isCreateMode
-      ? 'เพื่อใช้สำหรับเข้าสู่ระบบ และเบิกเงินล่วงหน้า'
-      : 'โดยใส่ตัวเลขให้ตรงกับหน้าที่แล้ว';
-  }, [isCreateMode]);
+    if (isCreateMode) {
+      return 'เพื่อใช้สำหรับเข้าสู่ระบบ และเบิกเงินล่วงหน้า';
+    }
+    if (isConfirmCreateMode) {
+      return 'โดยใส่ตัวเลขให้ตรงกับหน้าที่แล้ว';
+    }
+    if (isResetMode) {
+      return 'กรุณาตั้งรหัส PIN ใหม่ 6 หลัก';
+    }
+    return 'กรุณาใส่ PIN ใหม่อีกครั้งเพื่อยืนยัน';
+  }, [isCreateMode, isConfirmCreateMode, isResetMode]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const unsubscribe = navigation.addListener('beforeRemove', e => {
+        const actionType = e.data.action.type;
+
+        const allowNavigation =
+          actionType === 'RESET' || actionType === 'REPLACE';
+
+        if (allowNavigation) {
+          return;
+        }
+
+        e.preventDefault();
+      });
+
+      return unsubscribe;
+    }, [navigation]),
+  );
 
   const handlePressNumber = (num: string) => {
     if (passcode.length >= 6 || isSubmitting) return;
@@ -50,32 +82,65 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
     const timer = setTimeout(() => {
       if (isCreateMode) {
         navigation.replace('Passcode', {
-          mode: 'confirm',
+          mode: 'confirmCreate',
+          initialPasscode: passcode,
+        });
+        return;
+      }
+
+      if (isResetMode) {
+        navigation.replace('Passcode', {
+          mode: 'confirmReset',
           initialPasscode: passcode,
         });
         return;
       }
 
       if (passcode !== initialPasscode) {
-        Alert.alert('รหัสผ่านไม่ตรงกัน', 'กรุณาลองยืนยันรหัสผ่านอีกครั้ง');
+        Alert.alert('รหัสผ่านไม่ตรงกัน', 'กรุณาลองอีกครั้ง');
         setPasscode('');
         return;
       }
 
       setIsSubmitting(true);
 
-      Alert.alert('สำเร็จ', 'ตั้งรหัสผ่านเรียบร้อยแล้ว', [
+      const successMessage = isConfirmResetMode
+        ? 'รีเซ็ต PIN เรียบร้อยแล้ว'
+        : 'ตั้งรหัสผ่านเรียบร้อยแล้ว';
+
+      Alert.alert('สำเร็จ', successMessage, [
         {
           text: 'ตกลง',
           onPress: () => {
-            navigation.navigate('MainTab');
+            if (isConfirmResetMode) {
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: 'MainTab' }],
+                }),
+              );
+            } else {
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: 'MainTab' }],
+                }),
+              );
+            }
           },
         },
       ]);
     }, 200);
 
     return () => clearTimeout(timer);
-  }, [passcode, isCreateMode, navigation, initialPasscode]);
+  }, [
+    passcode,
+    isCreateMode,
+    isResetMode,
+    isConfirmResetMode,
+    navigation,
+    initialPasscode,
+  ]);
 
   const renderDot = (filled: boolean, index: number) => (
     <View key={index} style={[styles.dot, filled && styles.dotFilled]} />
@@ -109,8 +174,6 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <View style={styles.screen}>
-            <CustomHeaderArrow onPress={() => navigation.goBack()} />
-
             <View style={styles.content}>
               <View style={styles.logoWrapper}>
                 <View style={styles.logoShape}>

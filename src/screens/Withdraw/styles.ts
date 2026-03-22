@@ -3,60 +3,58 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#3c1ecb',
+    backgroundColor: '#efeff0',
   },
+
   container: {
     flex: 1,
-    backgroundColor: '#F5F7FB',
+    backgroundColor: '#efeff0', // 👈 ใช้ theme เดียวกับ home
   },
+
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 24,
     paddingBottom: 32,
   },
+
   headerTitle: {
     fontSize: 26,
     lineHeight: 32,
     fontWeight: '700',
-    color: '#3c1ecb',
     textAlign: 'center',
     marginBottom: 28,
-    textTransform: 'uppercase',
   },
+
   section: {
     marginBottom: 22,
   },
+
   sectionLabel: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '600',
-    color: '#4B5563',
-    marginBottom: 10,
-    textTransform: 'uppercase',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 12,
   },
+
+  // ✅ amount card (เอา shadow ออก + ใช้ border แบบเดียวกัน)
   amountCard: {
     backgroundColor: '#FFFFFF',
-    borderWidth: 1.5,
-    borderColor: '#D9DDF0',
     borderRadius: 20,
     minHeight: 88,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
   },
+
   currencySymbol: {
     fontSize: 34,
     lineHeight: 40,
     fontWeight: '700',
-    color: '#111827',
     marginRight: 4,
   },
+
   amountInput: {
     fontSize: 34,
     lineHeight: 40,
@@ -66,18 +64,16 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 0,
   },
+
+  // ✅ info card (เหมือน history card)
   infoCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: '#D9DDF0',
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
   },
+
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -87,27 +83,33 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#EEF1F6',
   },
+
   lastInfoRow: {
     borderBottomWidth: 0,
   },
+
   infoLabel: {
     fontSize: 14,
     lineHeight: 20,
     fontWeight: '500',
     color: '#6B7280',
   },
+
   infoValue: {
     fontSize: 14,
     lineHeight: 20,
     fontWeight: '700',
     color: '#111827',
   },
+
   feeValue: {
     fontSize: 15,
     lineHeight: 20,
     fontWeight: '700',
     color: '#3c1ecb',
   },
+
+  // ✅ ปุ่ม (เอา shadow ออกให้ match ทั้งแอป)
   withdrawButton: {
     backgroundColor: '#3c1ecb',
     minHeight: 54,
@@ -116,22 +118,20 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 8,
     marginBottom: 20,
-    shadowColor: '#3c1ecb',
-    shadowOpacity: 0.22,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 4,
   },
+
   withdrawButtonDisabled: {
     opacity: 0.5,
   },
+
   withdrawButtonText: {
     fontSize: 16,
     lineHeight: 22,
     fontWeight: '700',
     color: '#FFFFFF',
-    textTransform: 'uppercase',
   },
+
+  // bottom tab (คงเดิม แต่ clean อยู่แล้ว)
   bottomTab: {
     flexDirection: 'row',
     borderTopWidth: 1,
@@ -140,11 +140,13 @@ export const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 14,
   },
+
   tabItem: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   tabIcon: {
     width: 22,
     height: 22,
@@ -153,16 +155,19 @@ export const styles = StyleSheet.create({
     borderColor: '#9CA3AF',
     marginBottom: 6,
   },
+
   activeTabIcon: {
     borderColor: '#3c1ecb',
     backgroundColor: '#EDE9FE',
   },
+
   tabText: {
     fontSize: 12,
     lineHeight: 16,
     fontWeight: '500',
     color: '#6B7280',
   },
+
   activeTabText: {
     color: '#3c1ecb',
     fontWeight: '700',

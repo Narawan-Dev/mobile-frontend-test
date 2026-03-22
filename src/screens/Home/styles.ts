@@ -15,6 +15,15 @@ export const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 28,
   },
+  bottomSection: {
+    flex: 1,
+    backgroundColor: '#efeff0', // 👈 เปลี่ยนตรงนี้
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
@@ -43,24 +52,14 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '700',
   },
-  bottomSection: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
+
   balanceCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
   },
   balanceLabel: {
     fontSize: 14,
@@ -68,40 +67,40 @@ export const styles = StyleSheet.create({
     marginBottom: 4,
   },
   balanceAmount: {
-    fontSize: 32, // ปรับลดลงเล็กน้อยเพื่อความสมดุล
+    fontSize: 32,
     color: '#111827',
     fontWeight: '700',
   },
+
   historySection: {
-    flex: 1, // สำคัญเพื่อให้กินพื้นที่ที่เหลือ
-    marginBottom: 0, 
+    flex: 1,
+    marginBottom: 0,
   },
   sectionTitle: {
     fontSize: 18,
-    color: '#111827',
     fontWeight: '700',
     marginBottom: 12,
   },
+
   historyCard: {
     flex: 1,
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     paddingHorizontal: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
   },
+
   listContent: {
     paddingTop: 8,
-    paddingBottom: 130, 
+    paddingBottom: 0,
   },
+
   transactionItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingVertical: 16,
   },
   transactionLeft: {
@@ -113,7 +112,6 @@ export const styles = StyleSheet.create({
   },
   transactionDate: {
     fontSize: 15,
-    color: '#111827',
     fontWeight: '600',
   },
   transactionStatus: {
@@ -123,8 +121,22 @@ export const styles = StyleSheet.create({
   },
   transactionAmount: {
     fontSize: 16,
-    color: '#111827',
     fontWeight: '700',
     marginLeft: 12,
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 999,
+  },
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  transactionIcon: {
+    width: 24,
+    marginRight: 8,
+    marginTop: 2,
+    alignItems: 'flex-start',
   },
 });
