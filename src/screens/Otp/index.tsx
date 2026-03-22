@@ -16,6 +16,7 @@ import CustomHeaderArrow from '../../components/CustomHeaderArrow';
 import CustomAuthHeader from '../../components/CustomAuthHeader';
 import CustomFloatingInput from '../../components/CustomFloatingInput';
 import CustomAuthCard from '../../components/CustomAuthCard';
+import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { OTP_LENGTH } from '../../constants/app';
@@ -23,7 +24,7 @@ import { colors } from '../../theme/colors';
 import { styles } from './styles';
 
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { signInWithPhone } from '../../store/thunks/authThunks';
+import { requestOtp, signInWithPhone } from '../../store/thunks/authThunks';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Otp'>;
 
@@ -38,10 +39,12 @@ const OtpScreen = ({ navigation, route }: Props) => {
 
   const { phone } = route.params;
   const dispatch = useAppDispatch();
-  const hasPin = useAppSelector(state => state.auth.hasPin);
+  const { hasPin } = useAppSelector(state => state.auth);
 
-  const [refCode] = useState(generateRef());
+  const [refCode, setRefCode] = useState(generateRef());
   const [submitError, setSubmitError] = useState('');
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   const {
     control,
@@ -50,7 +53,7 @@ const OtpScreen = ({ navigation, route }: Props) => {
     setValue,
     setError,
     clearErrors,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<OtpFormValues>({
     defaultValues: {
       otp: '',
@@ -64,7 +67,13 @@ const OtpScreen = ({ navigation, route }: Props) => {
     return otpValue?.length === OTP_LENGTH;
   }, [otpValue]);
 
+  const isLoading = isSigningIn || isResending;
+
   const onSubmit = async (data: OtpFormValues) => {
+    if (isLoading) {
+      return;
+    }
+
     if (data.otp.length !== OTP_LENGTH) {
       setError('otp', {
         type: 'manual',
@@ -74,32 +83,58 @@ const OtpScreen = ({ navigation, route }: Props) => {
     }
 
     setSubmitError('');
+    setIsSigningIn(true);
 
-    const result = await dispatch(signInWithPhone(phone, data.otp));
+    try {
+      const result = await dispatch(signInWithPhone(phone, data.otp));
 
-    if (result?.success) {
-      if (hasPin) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'MainTab' }],
+      if (result?.success) {
+        if (hasPin) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'MainTab' }],
+          });
+          return;
+        }
+
+        navigation.navigate('Passcode', {
+          mode: 'create',
         });
         return;
       }
 
-      navigation.navigate('Passcode', {
-        mode: 'create',
-      });
+      setSubmitError(result?.message || 'Invalid OTP. Please try again.');
+    } catch (error) {
+      setSubmitError('Something went wrong. Please try again.');
+    } finally {
+      setIsSigningIn(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (isLoading) {
       return;
     }
 
-    setSubmitError(result?.message || 'Invalid OTP. Please try again.');
-  };
-
-  const handleResend = () => {
-    console.log('resend OTP');
+    setSubmitError('');
     setValue('otp', '');
     clearErrors('otp');
-    setSubmitError('');
+    setIsResending(true);
+
+    try {
+      const result = await dispatch(requestOtp(phone));
+
+      if (result?.success) {
+        setRefCode(generateRef());
+        return;
+      }
+
+      setSubmitError(result?.message || 'Failed to resend OTP. Please try again.');
+    } catch (error) {
+      setSubmitError('Something went wrong while resending OTP.');
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (
@@ -125,7 +160,11 @@ const OtpScreen = ({ navigation, route }: Props) => {
             />
 
             <CustomHeaderArrow
-              onPress={() => navigation.goBack()}
+              onPress={() => {
+                if (!isLoading) {
+                  navigation.goBack();
+                }
+              }}
               iconColor={colors.background}
             />
           </View>
@@ -160,6 +199,7 @@ const OtpScreen = ({ navigation, route }: Props) => {
                     }}
                     keyboardType="number-pad"
                     maxLength={OTP_LENGTH}
+                    editable={!isLoading}
                   />
                 )}
               />
@@ -197,6 +237,7 @@ const OtpScreen = ({ navigation, route }: Props) => {
                   style={styles.resendContainer}
                   onPress={handleResend}
                   activeOpacity={0.8}
+                  disabled={isLoading}
                 >
                   <MaterialIcons
                     name="refresh"
@@ -204,7 +245,7 @@ const OtpScreen = ({ navigation, route }: Props) => {
                     color={colors.textMuted}
                   />
                   <CustomAppText style={styles.resendText}>
-                    Resend OTP
+                    {isResending ? 'Resending...' : 'Resend OTP'}
                   </CustomAppText>
                 </TouchableOpacity>
               </View>
@@ -213,9 +254,9 @@ const OtpScreen = ({ navigation, route }: Props) => {
             <TouchableOpacity
               style={[
                 styles.button,
-                (!isValidOtp || isSubmitting) && styles.buttonDisabled,
+                (!isValidOtp || isLoading) && styles.buttonDisabled,
               ]}
-              disabled={!isValidOtp || isSubmitting}
+              disabled={!isValidOtp || isLoading}
               activeOpacity={0.8}
               onPress={handleSubmit(onSubmit)}
             >
@@ -223,7 +264,7 @@ const OtpScreen = ({ navigation, route }: Props) => {
                 variant="button"
                 style={[
                   styles.buttonText,
-                  (!isValidOtp || isSubmitting) && styles.buttonTextDisabled,
+                  (!isValidOtp || isLoading) && styles.buttonTextDisabled,
                 ]}
               >
                 Next
@@ -231,6 +272,10 @@ const OtpScreen = ({ navigation, route }: Props) => {
             </TouchableOpacity>
           </CustomAuthCard>
         </KeyboardAvoidingView>
+
+        <CustomLoadingOverlay
+          visible={isLoading}
+        />
       </SafeAreaView>
     </>
   );

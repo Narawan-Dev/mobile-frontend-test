@@ -16,6 +16,7 @@ import CustomAppText from '../../components/CustomAppText';
 import CustomAuthHeader from '../../components/CustomAuthHeader';
 import CustomFloatingInput from '../../components/CustomFloatingInput';
 import CustomAuthCard from '../../components/CustomAuthCard';
+import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 
 import { styles } from './styles';
 import { RootStackParamList } from '../../navigation/AppNavigator';
@@ -107,6 +108,7 @@ const SignInScreen = ({ navigation }: Props) => {
                     maxLength={PHONE_LENGTH}
                     placeholder="Example: 0812345678"
                     errorText={errors.phone?.message}
+                    editable={!loading}
                   />
                 )}
               />
@@ -134,10 +136,14 @@ const SignInScreen = ({ navigation }: Props) => {
                   (!isValid || loading) && styles.buttonTextDisabled,
                 ]}
               >
-                {loading ? 'Sending...' : 'Send OTP'}
+                Send OTP
               </CustomAppText>
             </TouchableOpacity>
           </CustomAuthCard>
+
+          <CustomLoadingOverlay
+            visible={loading}
+          />
         </KeyboardAvoidingView>
       </SafeAreaView>
     </>
