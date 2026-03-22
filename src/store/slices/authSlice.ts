@@ -8,6 +8,8 @@ export type AuthState = {
   loading: boolean;
   error: string | null;
   hasPin: boolean;
+  passcode: string | null;
+  isPasscodeVerified: boolean;
 };
 
 const initialState: AuthState = {
@@ -18,6 +20,8 @@ const initialState: AuthState = {
   loading: false,
   error: null,
   hasPin: false,
+  passcode: null,
+  isPasscodeVerified: false,
 };
 
 const authSlice = createSlice({
@@ -51,11 +55,13 @@ const authSlice = createSlice({
         token: string | null;
         phone: string | null;
         hasPin?: boolean;
+        passcode?: string | null;
       }>,
     ) => {
       state.token = action.payload.token;
       state.phone = action.payload.phone;
       state.hasPin = action.payload.hasPin ?? false;
+      state.passcode = action.payload.passcode ?? null;
       state.isAuthenticated = !!action.payload.token;
       state.isHydrated = true;
       state.loading = false;
@@ -64,6 +70,15 @@ const authSlice = createSlice({
 
     setHasPin: (state, action: PayloadAction<boolean>) => {
       state.hasPin = action.payload;
+    },
+
+    setPasscode: (state, action: PayloadAction<string | null>) => {
+      state.passcode = action.payload;
+      state.hasPin = !!action.payload;
+    },
+
+    setPasscodeVerified: (state, action) => {
+      state.isPasscodeVerified = action.payload;
     },
 
     clearAuthError: state => {
@@ -88,6 +103,8 @@ export const {
   signInFailure,
   hydrateAuth,
   setHasPin,
+  setPasscode,
+  setPasscodeVerified,
   clearAuthError,
   logout,
 } = authSlice.actions;

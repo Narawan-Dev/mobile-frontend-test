@@ -18,13 +18,13 @@ import CustomFloatingInput from '../../components/CustomFloatingInput';
 import CustomAuthCard from '../../components/CustomAuthCard';
 import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 
-import { RootStackParamList } from '../../navigation/AppNavigator';
 import { OTP_LENGTH } from '../../constants/app';
 import { colors } from '../../theme/colors';
 import { styles } from './styles';
 
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { requestOtp, signInWithPhone } from '../../store/thunks/authThunks';
+import { RootStackParamList } from '../../navigation/typs';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Otp'>;
 

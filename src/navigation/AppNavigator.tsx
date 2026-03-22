@@ -5,16 +5,7 @@ import SignInScreen from '../screens/SignIn';
 import OtpScreen from '../screens/Otp';
 import PasscodeScreen from '../screens/Passcode';
 import MainTabNavigator from './MainTabNavigator';
-
-export type RootStackParamList = {
-  SignIn: undefined;
-  Otp: { phone: string };
-  Passcode: {
-    mode: 'create' | 'confirmCreate' | 'reset' | 'confirmReset';
-    initialPasscode?: string;
-  };
-  MainTab: undefined;
-};
+import { RootStackParamList } from './typs';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

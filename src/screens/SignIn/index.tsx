@@ -19,11 +19,11 @@ import CustomAuthCard from '../../components/CustomAuthCard';
 import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 
 import { styles } from './styles';
-import { RootStackParamList } from '../../navigation/AppNavigator';
 import { PHONE_LENGTH } from '../../constants/app';
 import { colors } from '../../theme/colors';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { requestOtp } from '../../store/thunks/authThunks';
+import { RootStackParamList } from '../../navigation/typs';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 

@@ -1,32 +1,61 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, FlatList, StatusBar, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
+import { useFocusEffect } from '@react-navigation/native';
+
 import CustomAppText from '../../components/CustomAppText';
 import { styles } from './styles';
 import CustomLogo from '../../components/CustomLogo';
 import { colors } from '../../theme/colors';
+import { useAppSelector } from '../../store/hooks';
+import { userApi } from '../../services/api/userApi';
+import { Transaction } from './types';
 
-const transactions = [
-  { id: '1', date: '15 Feb 2023', amount: 100, status: 'Completed' },
-  { id: '2', date: '16 Feb 2023', amount: 250, status: 'Completed' },
-  { id: '3', date: '17 Feb 2023', amount: 80, status: 'Completed' },
-  { id: '4', date: '18 Feb 2023', amount: 300, status: 'Completed' },
-  { id: '5', date: '19 Feb 2023', amount: 120, status: 'Completed' },
-  { id: '6', date: '20 Feb 2023', amount: 500, status: 'Completed' },
-  { id: '7', date: '21 Feb 2023', amount: 90, status: 'Completed' },
-  { id: '8', date: '22 Feb 2023', amount: 60, status: 'Completed' },
-  { id: '9', date: '23 Feb 2023', amount: 1200, status: 'Completed' },
-  { id: '10', date: '24 Feb 2023', amount: 45, status: 'Completed' },
-];
+const defaultTransactions: Transaction[] = [];
 
 const HomeScreen = () => {
+  const token = useAppSelector(s => s.auth.token);
+
+  const [userName, setUserName] = useState('');
+  const [available, setAvailable] = useState<number | null>(null);
+  const [txns, setTxns] = useState<Transaction[]>(defaultTransactions);
+
   const formatCurrency = (amount: number) => {
     return `$${amount.toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;
   };
+
+  const fetchData = useCallback(async () => {
+    if (!token) {
+      return;
+    }
+
+    try {
+      const profile = await userApi.getProfile(token);
+      setUserName(
+        profile?.data?.firstname
+          ? `${profile.data.firstname} ${profile.data.lastname ?? ''}`.trim()
+          : profile?.data?.email ?? '',
+      );
+
+      const transactionsRes = await userApi.getTransactions(token);
+      setAvailable(transactionsRes?.data?.available ?? null);
+
+      const transactions = transactionsRes?.data?.transactions ?? [];
+      setTxns([...transactions].reverse());
+    } catch (error) {
+      // swallow for now
+    }
+  }, [token]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [fetchData]),
+  );
 
   return (
     <>
@@ -43,7 +72,9 @@ const HomeScreen = () => {
               <CustomLogo color={colors.background} />
 
               <View style={styles.profileRow}>
-                <CustomAppText style={styles.userName}>John Doe</CustomAppText>
+                <CustomAppText style={styles.userName}>
+                  {userName || 'User'}
+                </CustomAppText>
 
                 <View style={styles.avatar}>
                   <Image
@@ -66,7 +97,7 @@ const HomeScreen = () => {
                 numberOfLines={1}
                 adjustsFontSizeToFit
               >
-                {formatCurrency(10000)}
+                {available !== null ? formatCurrency(available) : '-'}
               </CustomAppText>
             </View>
 
@@ -77,8 +108,8 @@ const HomeScreen = () => {
 
               <View style={styles.historyCard}>
                 <FlatList
-                  data={transactions}
-                  keyExtractor={item => item.id}
+                  data={txns}
+                  keyExtractor={item => String(item.uid)}
                   showsVerticalScrollIndicator={false}
                   contentContainerStyle={styles.listContent}
                   ItemSeparatorComponent={() => <View style={styles.divider} />}
@@ -100,7 +131,7 @@ const HomeScreen = () => {
                         </View>
 
                         <CustomAppText style={styles.transactionStatus}>
-                          {item.status}
+                          Completed
                         </CustomAppText>
                       </View>
 

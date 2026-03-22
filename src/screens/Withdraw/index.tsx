@@ -5,16 +5,23 @@ import {
   TouchableOpacity,
   StatusBar,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomAppText from '../../components/CustomAppText';
+import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 import { styles } from './styles';
 import { colors } from '../../theme/colors';
+import { useAppSelector } from '../../store/hooks';
+import { userApi } from '../../services/api/userApi';
 
 const FEE_AMOUNT = 5;
 
 const WithdrawScreen = () => {
   const [amount, setAmount] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const token = useAppSelector(s => s.auth.token);
 
   const handleAmountChange = (text: string) => {
     const cleaned = text.replace(/[^0-9]/g, '');
@@ -29,7 +36,32 @@ const WithdrawScreen = () => {
     return Number(amount).toLocaleString();
   }, [amount]);
 
-  const isButtonDisabled = !amount || Number(amount) <= 0;
+  const isButtonDisabled = !amount || Number(amount) <= 0 || loading;
+
+  const handleWithdraw = async () => {
+    if (!token) {
+      Alert.alert('Not signed in');
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const result = await userApi.withdraw(token, amount);
+
+      if (result?.message === 'success') {
+        Alert.alert('Success', 'Withdrawal successful');
+        setAmount('');
+        return;
+      }
+
+      Alert.alert('Failed', result?.message || 'Withdrawal failed');
+    } catch (error) {
+      Alert.alert('Error', 'Unable to complete withdrawal');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -62,6 +94,7 @@ const WithdrawScreen = () => {
                   placeholderTextColor={colors.disabledText}
                   keyboardType="number-pad"
                   style={styles.amountInput}
+                  editable={!loading}
                 />
               </View>
             </View>
@@ -116,6 +149,7 @@ const WithdrawScreen = () => {
                 isButtonDisabled && styles.withdrawButtonDisabled,
               ]}
               disabled={isButtonDisabled}
+              onPress={handleWithdraw}
             >
               <CustomAppText style={styles.withdrawButtonText}>
                 Withdraw
@@ -124,6 +158,8 @@ const WithdrawScreen = () => {
           </ScrollView>
         </View>
       </SafeAreaView>
+
+      <CustomLoadingOverlay visible={loading} />
     </>
   );
 };

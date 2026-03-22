@@ -12,20 +12,30 @@ import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CommonActions } from '@react-navigation/native';
 
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import {
+  setPasscode,
+  setHasPin,
+  setPasscodeVerified,
+} from '../../store/slices/authSlice';
+
 import CustomAppText from '../../components/CustomAppText';
 import CustomLogo from '../../components/CustomLogo';
-import { RootStackParamList } from '../../navigation/AppNavigator';
 import { PASSCODE_LENGTH, SUBMIT_DELAY } from '../../constants/app';
 import { colors } from '../../theme/colors';
 import { styles } from './styles';
+import { RootStackParamList } from '../../navigation/typs';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Passcode'>;
 
 const PasscodeScreen = ({ navigation, route }: Props) => {
   const { mode, initialPasscode } = route.params;
   const insets = useSafeAreaInsets();
+  const dispatch = useAppDispatch();
 
-  const [passcode, setPasscode] = useState('');
+  const storedPasscode = useAppSelector(s => s.auth.passcode);
+
+  const [passcode, setPasscodeState] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isCreateMode = mode === 'create';
@@ -38,6 +48,7 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
     if (isCreateMode) return 'Set a 6-digit Passcode';
     if (isConfirmCreateMode) return 'Confirm Passcode';
     if (isResetMode) return 'Set New PIN';
+    if (mode === 'enter') return 'Enter Passcode';
     return 'Confirm New PIN';
   };
 
@@ -52,6 +63,10 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
 
     if (isResetMode) {
       return 'Please set a new 6-digit PIN';
+    }
+
+    if (mode === 'enter') {
+      return 'Please enter your passcode to continue';
     }
 
     return 'Please re-enter your new PIN to confirm';
@@ -84,16 +99,20 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
   };
 
   const handlePasscodeMismatch = () => {
+    setIsSubmitting(false);
     Alert.alert('Passcode mismatch', 'Please try again');
-    setPasscode('');
+    setPasscodeState('');
   };
 
   const handlePasscodeSuccess = () => {
-    setIsSubmitting(true);
+    setIsSubmitting(false);
 
-    const successMessage = isConfirmResetMode
-      ? 'PIN has been reset successfully'
-      : 'Passcode has been set successfully';
+    const successMessage =
+      mode === 'enter'
+        ? 'Passcode accepted'
+        : isConfirmResetMode
+          ? 'PIN has been reset successfully'
+          : 'Passcode has been set successfully';
 
     Alert.alert('Success', successMessage, [
       {
@@ -108,7 +127,7 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
       return;
     }
 
-    setPasscode(prev => prev + num);
+    setPasscodeState(prev => prev + num);
   };
 
   const handleDelete = () => {
@@ -116,7 +135,7 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
       return;
     }
 
-    setPasscode(prev => prev.slice(0, -1));
+    setPasscodeState(prev => prev.slice(0, -1));
   };
 
   useEffect(() => {
@@ -124,8 +143,11 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
       return;
     }
 
+    setIsSubmitting(true);
+
     const timer = setTimeout(() => {
       if (isCreateMode || isResetMode) {
+        setIsSubmitting(false);
         goToConfirmScreen();
         return;
       }
@@ -136,6 +158,31 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
       }
 
       if (isConfirmMode) {
+        dispatch(setPasscode(passcode));
+        dispatch(setHasPin(true));
+        dispatch(setPasscodeVerified(true));
+        handlePasscodeSuccess();
+        return;
+      }
+
+      if (mode === 'enter') {
+        if (!storedPasscode) {
+          setIsSubmitting(false);
+          Alert.alert('No passcode set', 'Please set a passcode first', [
+            {
+              text: 'OK',
+              onPress: resetToMainTab,
+            },
+          ]);
+          return;
+        }
+
+        if (passcode !== storedPasscode) {
+          handlePasscodeMismatch();
+          return;
+        }
+
+        dispatch(setPasscodeVerified(true));
         handlePasscodeSuccess();
       }
     }, SUBMIT_DELAY);
@@ -143,11 +190,13 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
     return () => clearTimeout(timer);
   }, [
     passcode,
+    mode,
     initialPasscode,
     isCreateMode,
     isResetMode,
     isConfirmMode,
-    isConfirmResetMode,
+    storedPasscode,
+    dispatch,
   ]);
 
   const renderDot = (filled: boolean, index: number) => {
@@ -204,7 +253,12 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
               </View>
             </View>
 
-            <View style={[styles.keypad, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+            <View
+              style={[
+                styles.keypad,
+                { paddingBottom: Math.max(insets.bottom, 12) },
+              ]}
+            >
               <View style={styles.row}>
                 {renderNumberButton('1')}
                 {renderNumberButton('2')}
