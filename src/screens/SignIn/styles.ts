@@ -25,4 +25,18 @@ export const styles = StyleSheet.create({
   buttonTextDisabled: {
     color: colors.disabledText,
   },
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  formSection: {
+    marginBottom: 8,
+  },
+  apiErrorText: {
+    marginTop: 8,
+    marginBottom: 12,
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.error,
+  },
 });
