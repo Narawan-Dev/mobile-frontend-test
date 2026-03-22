@@ -13,6 +13,9 @@ import { RootStackParamList } from '../../navigation/AppNavigator';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomAuthHeader from '../../components/CustomAuthHeader';
 import CustomFloatingInput from '../../components/CustomFloatingInput';
+import CustomAuthCard from '../../components/CustomAuthCard';
+import { PHONE_LENGTH } from '../../constants/app';
+import { colors } from '../../theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -21,7 +24,7 @@ const SignInScreen = ({ navigation }: Props) => {
   const [touched, setTouched] = useState(false);
 
   const handlePhoneChange = (text: string) => {
-    const cleaned = text.replace(/\D/g, '').slice(0, 10);
+    const cleaned = text.replace(/\D/g, '').slice(0, PHONE_LENGTH);
     setPhone(cleaned);
   };
 
@@ -42,13 +45,13 @@ const SignInScreen = ({ navigation }: Props) => {
     <>
       <StatusBar
         barStyle="light-content"
-        backgroundColor="#3c1ecb"
+        backgroundColor={colors.primary}
         translucent={false}
       />
 
       <SafeAreaView
         edges={['left', 'right', 'bottom']}
-        style={{ flex: 1, backgroundColor: '#FFFFFF' }}
+        style={{ flex: 1, backgroundColor: colors.background }}
       >
         <KeyboardAvoidingView
           style={styles.container}
@@ -59,7 +62,7 @@ const SignInScreen = ({ navigation }: Props) => {
             subtitle="กรุณาใส่เบอร์โทรศัพท์ เพื่อยืนยันตัวตน"
           />
 
-          <View style={styles.card}>
+          <CustomAuthCard style={styles.cardContent}>
             <View>
               <CustomFloatingInput
                 label="เบอร์โทรศัพท์"
@@ -67,7 +70,7 @@ const SignInScreen = ({ navigation }: Props) => {
                 onChangeText={handlePhoneChange}
                 onBlur={() => setTouched(true)}
                 keyboardType="number-pad"
-                maxLength={10}
+                maxLength={PHONE_LENGTH}
                 placeholder="ตัวอย่าง: 0812345678"
                 errorText={
                   showError ? 'กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง' : undefined
@@ -91,7 +94,7 @@ const SignInScreen = ({ navigation }: Props) => {
                 ส่งรหัส OTP
               </CustomAppText>
             </TouchableOpacity>
-          </View>
+          </CustomAuthCard>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </>

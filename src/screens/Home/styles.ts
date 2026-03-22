@@ -1,29 +1,29 @@
 import { StyleSheet } from 'react-native';
+import { colors } from '../../theme/colors';
 
 export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#3c1ecb',
+    backgroundColor: colors.primary,
   },
   screen: {
     flex: 1,
-    backgroundColor: '#3c1ecb',
+    backgroundColor: colors.primary,
   },
   topSection: {
-    backgroundColor: '#3c1ecb',
+    backgroundColor: colors.primary,
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 28,
   },
   bottomSection: {
     flex: 1,
-    backgroundColor: '#efeff0',
+    backgroundColor: colors.backgroundSecondary,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingHorizontal: 20,
     paddingTop: 20,
   },
-
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -37,41 +37,34 @@ export const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.disabledBg,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 12,
   },
-  avatarText: {
-    fontSize: 22,
-    color: '#3c1ecb',
-    fontWeight: '700',
-  },
   userName: {
     fontSize: 20,
-    color: '#FFFFFF',
+    color: colors.background,
     fontWeight: '700',
   },
-
   balanceCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
     borderRadius: 20,
     padding: 16,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#F1F5F9',
+    borderColor: colors.border,
   },
   balanceLabel: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textMuted,
     marginBottom: 4,
   },
   balanceAmount: {
     fontSize: 32,
-    color: '#111827',
+    color: colors.textPrimary,
     fontWeight: '700',
   },
-
   historySection: {
     flex: 1,
     marginBottom: 0,
@@ -80,23 +73,21 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     marginBottom: 12,
+    color: colors.textPrimary,
   },
-
   historyCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
     borderRadius: 20,
     paddingHorizontal: 16,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#F1F5F9',
+    borderColor: colors.border,
   },
-
   listContent: {
     paddingTop: 8,
     paddingBottom: 0,
   },
-
   transactionItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -108,21 +99,23 @@ export const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#EAEAEA',
+    backgroundColor: colors.border,
   },
   transactionDate: {
     fontSize: 15,
     fontWeight: '600',
+    color: colors.textPrimary,
   },
   transactionStatus: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.textMuted,
     marginTop: 4,
   },
   transactionAmount: {
     fontSize: 16,
     fontWeight: '700',
     marginLeft: 12,
+    color: colors.textPrimary,
   },
   avatarImage: {
     width: '100%',

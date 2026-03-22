@@ -9,11 +9,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomAppText from '../../components/CustomAppText';
 import { styles } from './styles';
+import { colors } from '../../theme/colors';
+
+const FEE_AMOUNT = 5;
 
 const WithdrawScreen = () => {
   const [amount, setAmount] = useState('');
-
-  const fee = 5;
 
   const handleAmountChange = (text: string) => {
     const cleaned = text.replace(/[^0-9]/g, '');
@@ -34,7 +35,7 @@ const WithdrawScreen = () => {
     <>
       <StatusBar
         barStyle="light-content"
-        backgroundColor="#3c1ecb"
+        backgroundColor={colors.primary}
         translucent={false}
       />
 
@@ -53,11 +54,12 @@ const WithdrawScreen = () => {
 
               <View style={styles.amountCard}>
                 <CustomAppText style={styles.currencySymbol}>$</CustomAppText>
+
                 <TextInput
                   value={displayAmount}
                   onChangeText={handleAmountChange}
                   placeholder="0"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor={colors.disabledText}
                   keyboardType="number-pad"
                   style={styles.amountInput}
                 />
@@ -78,9 +80,7 @@ const WithdrawScreen = () => {
                 </View>
 
                 <View style={styles.infoRow}>
-                  <CustomAppText style={styles.infoLabel}>
-                    Company
-                  </CustomAppText>
+                  <CustomAppText style={styles.infoLabel}>Company</CustomAppText>
                   <CustomAppText style={styles.infoValue}>
                     Salary Hero
                   </CustomAppText>
@@ -103,7 +103,7 @@ const WithdrawScreen = () => {
                 <View style={[styles.infoRow, styles.lastInfoRow]}>
                   <CustomAppText style={styles.infoLabel}>Fee</CustomAppText>
                   <CustomAppText style={styles.feeValue}>
-                    ${fee}
+                    ${FEE_AMOUNT}
                   </CustomAppText>
                 </View>
               </View>

@@ -15,6 +15,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeaderArrow from '../../components/CustomHeaderArrow';
 import CustomAuthHeader from '../../components/CustomAuthHeader';
 import CustomFloatingInput from '../../components/CustomFloatingInput';
+import CustomAuthCard from '../../components/CustomAuthCard';
+import { OTP_LENGTH } from '../../constants/app';
+import { colors } from '../../theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Otp'>;
 
@@ -28,14 +31,16 @@ const OtpScreen = ({ navigation, route }: Props) => {
   const [refCode] = useState(generateRef());
 
   const handleOtpChange = (text: string) => {
-    const cleaned = text.replace(/\D/g, '').slice(0, 6);
+    const cleaned = text.replace(/\D/g, '').slice(0, OTP_LENGTH);
     setOtp(cleaned);
   };
 
-  const isValidOtp = otp.length === 6;
+  const isValidOtp = otp.length === OTP_LENGTH;
 
   const handleNext = () => {
-    if (!isValidOtp) return;
+    if (!isValidOtp) {
+      return;
+    }
 
     console.log('verify otp:', otp, 'phone:', phone);
 
@@ -52,13 +57,13 @@ const OtpScreen = ({ navigation, route }: Props) => {
     <>
       <StatusBar
         barStyle="light-content"
-        backgroundColor="#3c1ecb"
+        backgroundColor={colors.primary}
         translucent={false}
       />
 
       <SafeAreaView
         edges={['left', 'right', 'bottom']}
-        style={{ flex: 1, backgroundColor: '#FFFFFF' }}
+        style={{ flex: 1, backgroundColor: colors.background }}
       >
         <KeyboardAvoidingView
           style={styles.container}
@@ -72,11 +77,11 @@ const OtpScreen = ({ navigation, route }: Props) => {
 
             <CustomHeaderArrow
               onPress={() => navigation.goBack()}
-              iconColor="#FFFFFF"
+              iconColor={colors.background}
             />
           </View>
 
-          <View style={styles.card}>
+          <CustomAuthCard style={styles.cardContent}>
             <View>
               <CustomFloatingInput
                 label="OTP"
@@ -84,7 +89,7 @@ const OtpScreen = ({ navigation, route }: Props) => {
                 value={otp}
                 onChangeText={handleOtpChange}
                 keyboardType="number-pad"
-                maxLength={6}
+                maxLength={OTP_LENGTH}
               />
 
               <View style={styles.row}>
@@ -97,7 +102,11 @@ const OtpScreen = ({ navigation, route }: Props) => {
                   onPress={handleResend}
                   activeOpacity={0.8}
                 >
-                  <MaterialIcons name="refresh" size={20} color="#6B7280" />
+                  <MaterialIcons
+                    name="refresh"
+                    size={20}
+                    color={colors.textMuted}
+                  />
                   <CustomAppText style={styles.resendText}>
                     ส่งรหัส OTP อีกครั้ง
                   </CustomAppText>
@@ -121,7 +130,7 @@ const OtpScreen = ({ navigation, route }: Props) => {
                 ต่อไป
               </CustomAppText>
             </TouchableOpacity>
-          </View>
+          </CustomAuthCard>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </>

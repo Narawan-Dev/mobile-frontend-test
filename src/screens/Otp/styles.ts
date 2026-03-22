@@ -1,22 +1,15 @@
 import { StyleSheet } from 'react-native';
+import { colors } from '../../theme/colors';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F5F7',
+    backgroundColor: colors.backgroundSecondary,
   },
   headerWrapper: {
     position: 'relative',
   },
-  card: {
-    flex: 1,
-    marginTop: -20,
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    paddingHorizontal: 20,
-    paddingTop: 28,
-    paddingBottom: 24,
+  cardContent: {
     justifyContent: 'space-between',
   },
   row: {
@@ -27,25 +20,25 @@ export const styles = StyleSheet.create({
   },
   refText: {
     fontSize: 13,
-    color: '#6B7280',
+    color: colors.textMuted,
   },
   button: {
     height: 56,
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#7C3AED',
+    backgroundColor: colors.primary,
   },
   buttonDisabled: {
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.disabledBg,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: colors.background,
     fontSize: 16,
     fontWeight: '600',
   },
   buttonTextDisabled: {
-    color: '#9CA3AF',
+    color: colors.disabledText,
   },
   resendContainer: {
     flexDirection: 'row',
@@ -54,7 +47,7 @@ export const styles = StyleSheet.create({
   resendText: {
     marginLeft: 6,
     fontSize: 13,
-    color: '#6B7280',
+    color: colors.textMuted,
     fontWeight: '600',
   },
 });

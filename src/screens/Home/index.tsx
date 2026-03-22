@@ -5,6 +5,7 @@ import MaterialIcons from '@react-native-vector-icons/material-icons';
 import CustomAppText from '../../components/CustomAppText';
 import { styles } from './styles';
 import CustomLogo from '../../components/CustomLogo';
+import { colors } from '../../theme/colors';
 
 const transactions = [
   { id: '1', date: '15 Feb 2023', amount: 100, status: 'Completed' },
@@ -31,7 +32,7 @@ const HomeScreen = () => {
     <>
       <StatusBar
         barStyle="light-content"
-        backgroundColor="#3c1ecb"
+        backgroundColor={colors.primary}
         translucent={false}
       />
 
@@ -39,9 +40,11 @@ const HomeScreen = () => {
         <View style={styles.screen}>
           <View style={styles.topSection}>
             <View style={styles.headerRow}>
-              <CustomLogo color="#FFFFFF" />
+              <CustomLogo color={colors.background} />
+
               <View style={styles.profileRow}>
                 <CustomAppText style={styles.userName}>John Doe</CustomAppText>
+
                 <View style={styles.avatar}>
                   <Image
                     source={require('../../assets/images/avatar.png')}
@@ -57,6 +60,7 @@ const HomeScreen = () => {
               <CustomAppText style={styles.balanceLabel}>
                 Available Balance
               </CustomAppText>
+
               <CustomAppText
                 style={styles.balanceAmount}
                 numberOfLines={1}
@@ -84,9 +88,10 @@ const HomeScreen = () => {
                         <MaterialIcons
                           name="check-circle"
                           size={18}
-                          color="#22C55E"
+                          color={colors.success}
                         />
                       </View>
+
                       <View style={styles.transactionLeft}>
                         <View style={styles.dateRow}>
                           <CustomAppText style={styles.transactionDate}>
