@@ -1,92 +1,96 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
+import { colors } from '../../theme/colors';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
+
 const horizontalPadding = 20;
 const keypadWidth = width - horizontalPadding * 2;
 const keySize = keypadWidth / 3;
+const keyHeight = Math.min(keySize * 0.9, height * 0.105);
 
 export const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
   },
   screen: {
     flex: 1,
-    position: 'relative',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
   },
   content: {
     flex: 1,
-    paddingTop: 72,
+    paddingTop: 40,
     paddingHorizontal: 24,
-    paddingBottom: 24,
+    paddingBottom: 20,
   },
   logoWrapper: {
-    marginTop: 70,
+    marginTop: 24,
     marginBottom: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
     fontSize: 18,
-    color: '#111827',
+    color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.textMuted,
     textAlign: 'center',
     lineHeight: 22,
-    paddingHorizontal: 30,
+    paddingHorizontal: 24,
   },
   dotsWrapper: {
     flexDirection: 'row',
     gap: 14,
     marginTop: 26,
-    marginBottom: 42,
     justifyContent: 'center',
   },
   dot: {
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.backgroundSecondary,
   },
   dotFilled: {
-    backgroundColor: '#4F2EDC',
+    backgroundColor: colors.primary,
   },
   keypad: {
-    width: keypadWidth,
+    width: '100%',
     borderTopWidth: 1,
     borderLeftWidth: 1,
-    borderColor: '#E5E7EB',
-    marginTop: 'auto',
-    marginBottom: 0,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
   },
   row: {
     flexDirection: 'row',
   },
   key: {
-    width: keySize,
-    height: keySize * 0.9,
+    flex: 1,
+    height: keyHeight,
     borderRightWidth: 1,
     borderBottomWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
   },
   keyEmpty: {
-    width: keySize,
-    height: keySize * 0.9,
+    flex: 1,
+    height: keyHeight,
     borderRightWidth: 1,
     borderBottomWidth: 1,
-    borderColor: '#E5E7EB',
-    backgroundColor: '#FFFFFF',
+    borderColor: colors.border,
+    backgroundColor: colors.background,
   },
   keyText: {
     fontSize: 24,
-    color: '#111827',
+    color: colors.textPrimary,
   },
 });

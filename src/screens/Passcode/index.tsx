@@ -7,20 +7,23 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CommonActions } from '@react-navigation/native';
+
 import CustomAppText from '../../components/CustomAppText';
-import { RootStackParamList } from '../../navigation/AppNavigator';
-import { styles } from './styles';
 import CustomLogo from '../../components/CustomLogo';
+import { RootStackParamList } from '../../navigation/AppNavigator';
 import { PASSCODE_LENGTH, SUBMIT_DELAY } from '../../constants/app';
+import { colors } from '../../theme/colors';
+import { styles } from './styles';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Passcode'>;
 
 const PasscodeScreen = ({ navigation, route }: Props) => {
   const { mode, initialPasscode } = route.params;
+  const insets = useSafeAreaInsets();
 
   const [passcode, setPasscode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -168,13 +171,13 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
     <>
       <StatusBar
         barStyle="dark-content"
-        backgroundColor="#FFFFFF"
+        backgroundColor={colors.background}
         translucent={false}
       />
 
       <SafeAreaView
-        edges={['left', 'right', 'bottom']}
-        style={{ flex: 1, backgroundColor: '#FFFFFF' }}
+        edges={['top', 'left', 'right', 'bottom']}
+        style={styles.safeArea}
       >
         <KeyboardAvoidingView
           style={styles.container}
@@ -183,7 +186,7 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
           <View style={styles.screen}>
             <View style={styles.content}>
               <View style={styles.logoWrapper}>
-                <CustomLogo color="#3c1ecb" />
+                <CustomLogo color={colors.primary} />
               </View>
 
               <CustomAppText variant="title" style={styles.title}>
@@ -199,39 +202,43 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
                   renderDot(index < passcode.length, index),
                 )}
               </View>
+            </View>
 
-              <View style={styles.keypad}>
-                <View style={styles.row}>
-                  {renderNumberButton('1')}
-                  {renderNumberButton('2')}
-                  {renderNumberButton('3')}
-                </View>
+            <View style={[styles.keypad, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+              <View style={styles.row}>
+                {renderNumberButton('1')}
+                {renderNumberButton('2')}
+                {renderNumberButton('3')}
+              </View>
 
-                <View style={styles.row}>
-                  {renderNumberButton('4')}
-                  {renderNumberButton('5')}
-                  {renderNumberButton('6')}
-                </View>
+              <View style={styles.row}>
+                {renderNumberButton('4')}
+                {renderNumberButton('5')}
+                {renderNumberButton('6')}
+              </View>
 
-                <View style={styles.row}>
-                  {renderNumberButton('7')}
-                  {renderNumberButton('8')}
-                  {renderNumberButton('9')}
-                </View>
+              <View style={styles.row}>
+                {renderNumberButton('7')}
+                {renderNumberButton('8')}
+                {renderNumberButton('9')}
+              </View>
 
-                <View style={styles.row}>
-                  <View style={styles.keyEmpty} />
+              <View style={styles.row}>
+                <View style={styles.keyEmpty} />
 
-                  {renderNumberButton('0')}
+                {renderNumberButton('0')}
 
-                  <TouchableOpacity
-                    style={styles.key}
-                    activeOpacity={0.7}
-                    onPress={handleDelete}
-                  >
-                    <MaterialIcons name="backspace" size={28} color="#111827" />
-                  </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                  style={styles.key}
+                  activeOpacity={0.7}
+                  onPress={handleDelete}
+                >
+                  <MaterialIcons
+                    name="backspace"
+                    size={28}
+                    color={colors.textPrimary}
+                  />
+                </TouchableOpacity>
               </View>
             </View>
           </View>

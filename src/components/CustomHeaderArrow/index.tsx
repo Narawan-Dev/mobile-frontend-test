@@ -3,6 +3,7 @@ import { TouchableOpacity, StyleSheet } from 'react-native';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { styles } from './styles';
+import { colors } from '../../theme/colors';
 
 type HeaderArrowProps = {
   onPress?: () => void;
@@ -11,7 +12,7 @@ type HeaderArrowProps = {
 
 const HeaderArrow = ({
   onPress,
-  iconColor = '#111827',
+  iconColor = colors.textPrimary,
 }: HeaderArrowProps) => {
   const insets = useSafeAreaInsets();
 

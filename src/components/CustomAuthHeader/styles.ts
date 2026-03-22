@@ -1,8 +1,9 @@
 import { StyleSheet } from 'react-native';
+import { colors } from '../../theme/colors';
 
 export const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#3c1ecb',
+    backgroundColor: colors.primary,
     paddingHorizontal: 24,
     paddingTop: 56,
     paddingBottom: 36,
@@ -28,7 +29,7 @@ export const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: colors.backgroundTertiary,
   },
   bottomLeftCircle: {
     position: 'absolute',
@@ -37,7 +38,7 @@ export const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 90,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: colors.backgroundTertiary,
   },
   logoRow: {
     flexDirection: 'row',
@@ -48,28 +49,28 @@ export const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
     marginRight: 8,
   },
   logoBigCircle: {
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
     marginRight: 8,
   },
   logoDotRight: {
     width: 14,
     height: 14,
     borderRadius: 7,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   title: {
-    color: '#fff',
+    color: colors.background,
     marginBottom: 8,
   },
   subtitle: {
-    color: 'rgba(255,255,255,0.85)',
+    color: colors.textSubTitle,
     lineHeight: 22,
   },
 });

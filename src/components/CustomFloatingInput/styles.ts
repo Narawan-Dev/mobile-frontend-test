@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { colors } from '../../theme/colors';
 
 export const styles = StyleSheet.create({
   wrapper: {
@@ -6,15 +7,15 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     height: 64,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     borderRadius: 14,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
   },
   wrapperFocused: {
-    borderColor: '#7C3AED',
+    borderColor: colors.primary,
   },
   wrapperError: {
-    borderColor: '#EF4444',
+    borderColor: colors.error,
   },
   floatingLabel: {
     position: 'absolute',
@@ -22,20 +23,20 @@ export const styles = StyleSheet.create({
     left: 14,
     zIndex: 10,
     fontSize: 12,
-    color: '#6B7280',
-    backgroundColor: '#FFFFFF',
+    color: colors.textMuted,
+    backgroundColor: colors.background,
     paddingHorizontal: 6,
   },
   input: {
     height: '100%',
     paddingHorizontal: 16,
-    color: '#111827',
+    color: colors.textPrimary,
     fontSize: 18,
   },
   errorText: {
     marginTop: 6,
     marginLeft: 4,
     fontSize: 12,
-    color: '#EF4444',
+    color: colors.error,
   },
 });

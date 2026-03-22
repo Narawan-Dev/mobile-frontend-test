@@ -1,12 +1,13 @@
 import React from 'react';
 import { View } from 'react-native';
 import { styles } from './styles';
+import { colors } from '../../theme/colors';
 
 type Props = {
   color?: string;
 };
 
-const CustomLogo = ({ color = '#4F2EDC' }: Props) => {
+const CustomLogo = ({ color = colors.primary }: Props) => {
   return (
     <View style={styles.logoShape}>
       <View style={[styles.logoTopRight, { backgroundColor: color }]} />
