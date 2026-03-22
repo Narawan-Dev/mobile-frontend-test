@@ -104,9 +104,15 @@ const HomeScreen = () => {
                         </CustomAppText>
                       </View>
 
-                      <CustomAppText style={styles.transactionAmount}>
-                        {formatCurrency(item.amount)}
-                      </CustomAppText>
+                      <View style={styles.transactionRight}>
+                        <CustomAppText
+                          style={styles.transactionAmount}
+                          numberOfLines={1}
+                          adjustsFontSizeToFit
+                        >
+                          {formatCurrency(item.amount)}
+                        </CustomAppText>
+                      </View>
                     </View>
                   )}
                 />

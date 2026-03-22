@@ -42,6 +42,11 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 12,
   },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 999,
+  },
   userName: {
     fontSize: 20,
     color: colors.background,
@@ -61,7 +66,7 @@ export const styles = StyleSheet.create({
     marginBottom: 4,
   },
   balanceAmount: {
-    fontSize: 32,
+    fontSize: 26,
     color: colors.textPrimary,
     fontWeight: '700',
   },
@@ -79,27 +84,39 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     borderRadius: 20,
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: colors.border,
   },
   listContent: {
     paddingTop: 8,
-    paddingBottom: 0,
+    paddingBottom: 8,
   },
   transactionItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'flex-start',
     paddingVertical: 16,
   },
+  transactionIcon: {
+    width: 24,
+    marginRight: 8,
+    marginTop: 2,
+    alignItems: 'flex-start',
+  },
   transactionLeft: {
     flex: 1,
+    minWidth: 0,
   },
-  divider: {
-    height: 1,
-    backgroundColor: colors.border,
+  transactionRight: {
+    width: 110,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-start',
+    marginLeft: 12,
+  },
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   transactionDate: {
     fontSize: 15,
@@ -114,22 +131,12 @@ export const styles = StyleSheet.create({
   transactionAmount: {
     fontSize: 16,
     fontWeight: '700',
-    marginLeft: 12,
     color: colors.textPrimary,
-  },
-  avatarImage: {
+    textAlign: 'right',
     width: '100%',
-    height: '100%',
-    borderRadius: 999,
   },
-  dateRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  transactionIcon: {
-    width: 24,
-    marginRight: 8,
-    marginTop: 2,
-    alignItems: 'flex-start',
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
   },
 });
