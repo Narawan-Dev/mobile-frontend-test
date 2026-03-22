@@ -35,26 +35,26 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
   const isConfirmMode = isConfirmCreateMode || isConfirmResetMode;
 
   const getTitle = () => {
-    if (isCreateMode) return 'ตั้งรหัสผ่าน 6 หลัก';
-    if (isConfirmCreateMode) return 'ยืนยันรหัสผ่าน';
-    if (isResetMode) return 'ตั้ง PIN ใหม่';
-    return 'ยืนยัน PIN ใหม่';
+    if (isCreateMode) return 'Set a 6-digit Passcode';
+    if (isConfirmCreateMode) return 'Confirm Passcode';
+    if (isResetMode) return 'Set New PIN';
+    return 'Confirm New PIN';
   };
 
   const getSubtitle = () => {
     if (isCreateMode) {
-      return 'เพื่อใช้สำหรับเข้าสู่ระบบ และเบิกเงินล่วงหน้า';
+      return 'This passcode will be used for login';
     }
 
     if (isConfirmCreateMode) {
-      return 'โดยใส่ตัวเลขให้ตรงกับหน้าที่แล้ว';
+      return 'Re-enter the same passcode as before';
     }
 
     if (isResetMode) {
-      return 'กรุณาตั้งรหัส PIN ใหม่ 6 หลัก';
+      return 'Please set a new 6-digit PIN';
     }
 
-    return 'กรุณาใส่ PIN ใหม่อีกครั้งเพื่อยืนยัน';
+    return 'Please re-enter your new PIN to confirm';
   };
 
   const resetToMainTab = () => {
@@ -84,7 +84,7 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
   };
 
   const handlePasscodeMismatch = () => {
-    Alert.alert('รหัสผ่านไม่ตรงกัน', 'กรุณาลองอีกครั้ง');
+    Alert.alert('Passcode mismatch', 'Please try again');
     setPasscode('');
   };
 
@@ -92,12 +92,12 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
     setIsSubmitting(true);
 
     const successMessage = isConfirmResetMode
-      ? 'รีเซ็ต PIN เรียบร้อยแล้ว'
-      : 'ตั้งรหัสผ่านเรียบร้อยแล้ว';
+      ? 'PIN has been reset successfully'
+      : 'Passcode has been set successfully';
 
-    Alert.alert('สำเร็จ', successMessage, [
+    Alert.alert('Success', successMessage, [
       {
-        text: 'ตกลง',
+        text: 'OK',
         onPress: resetToMainTab,
       },
     ]);

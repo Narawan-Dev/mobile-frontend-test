@@ -22,7 +22,7 @@ import { RootStackParamList } from '../../navigation/AppNavigator';
 import { PHONE_LENGTH } from '../../constants/app';
 import { colors } from '../../theme/colors';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { signInWithPhone } from '../../store/thunks/authThunks';
+import { requestOtp } from '../../store/thunks/authThunks';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -54,14 +54,14 @@ const SignInScreen = ({ navigation }: Props) => {
 
     const cleanedPhone = values.phone.replace(/\D/g, '').slice(0, PHONE_LENGTH);
 
-    const result = await dispatch(signInWithPhone(cleanedPhone));
+    const result = await dispatch(requestOtp(cleanedPhone));
 
     if (result?.success) {
       navigation.navigate('Otp', { phone: cleanedPhone });
       return;
     }
 
-    Alert.alert('เข้าสู่ระบบไม่สำเร็จ', result?.message || 'กรุณาลองใหม่อีกครั้ง');
+    Alert.alert('Failed to send OTP', result?.message || 'Please try again');
   };
 
   return (
@@ -78,8 +78,8 @@ const SignInScreen = ({ navigation }: Props) => {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <CustomAuthHeader
-            title="เข้าสู่ระบบอย่างปลอดภัย"
-            subtitle="กรุณาใส่เบอร์โทรศัพท์ เพื่อยืนยันตัวตน"
+            title="Sign In"
+            subtitle="Please enter your phone number"
           />
 
           <CustomAuthCard style={styles.cardContent}>
@@ -88,15 +88,15 @@ const SignInScreen = ({ navigation }: Props) => {
                 control={control}
                 name="phone"
                 rules={{
-                  required: 'กรุณากรอกเบอร์โทรศัพท์',
+                  required: 'Phone number is required',
                   pattern: {
                     value: /^0\d{9}$/,
-                    message: 'กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง',
+                    message: 'Please enter a valid phone number',
                   },
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <CustomFloatingInput
-                    label="เบอร์โทรศัพท์"
+                    label="Phone Number"
                     value={value}
                     onBlur={onBlur}
                     onChangeText={(text: string) => {
@@ -105,7 +105,7 @@ const SignInScreen = ({ navigation }: Props) => {
                     }}
                     keyboardType="number-pad"
                     maxLength={PHONE_LENGTH}
-                    placeholder="ตัวอย่าง: 0812345678"
+                    placeholder="Example: 0812345678"
                     errorText={errors.phone?.message}
                   />
                 )}
@@ -134,7 +134,7 @@ const SignInScreen = ({ navigation }: Props) => {
                   (!isValid || loading) && styles.buttonTextDisabled,
                 ]}
               >
-                {loading ? 'กำลังส่ง...' : 'ส่งรหัส OTP'}
+                {loading ? 'Sending...' : 'Send OTP'}
               </CustomAppText>
             </TouchableOpacity>
           </CustomAuthCard>

@@ -1,5 +1,6 @@
 export type SignInRequest = {
   phone: string;
+  otp?: string;
 };
 
 export type SignInResponse = {

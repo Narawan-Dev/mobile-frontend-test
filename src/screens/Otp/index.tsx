@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -8,18 +8,28 @@ import {
 } from 'react-native';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import CustomAppText from '../../components/CustomAppText';
-import { RootStackParamList } from '../../navigation/AppNavigator';
-import { styles } from './styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Controller, useForm } from 'react-hook-form';
+
+import CustomAppText from '../../components/CustomAppText';
 import CustomHeaderArrow from '../../components/CustomHeaderArrow';
 import CustomAuthHeader from '../../components/CustomAuthHeader';
 import CustomFloatingInput from '../../components/CustomFloatingInput';
 import CustomAuthCard from '../../components/CustomAuthCard';
+
+import { RootStackParamList } from '../../navigation/AppNavigator';
 import { OTP_LENGTH } from '../../constants/app';
 import { colors } from '../../theme/colors';
+import { styles } from './styles';
+
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { signInWithPhone } from '../../store/thunks/authThunks';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Otp'>;
+
+type OtpFormValues = {
+  otp: string;
+};
 
 const OtpScreen = ({ navigation, route }: Props) => {
   const generateRef = () => {
@@ -27,30 +37,69 @@ const OtpScreen = ({ navigation, route }: Props) => {
   };
 
   const { phone } = route.params;
-  const [otp, setOtp] = useState('');
+  const dispatch = useAppDispatch();
+  const hasPin = useAppSelector(state => state.auth.hasPin);
+
   const [refCode] = useState(generateRef());
+  const [submitError, setSubmitError] = useState('');
 
-  const handleOtpChange = (text: string) => {
-    const cleaned = text.replace(/\D/g, '').slice(0, OTP_LENGTH);
-    setOtp(cleaned);
-  };
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    setError,
+    clearErrors,
+    formState: { errors, isSubmitting },
+  } = useForm<OtpFormValues>({
+    defaultValues: {
+      otp: '',
+    },
+    mode: 'onChange',
+  });
 
-  const isValidOtp = otp.length === OTP_LENGTH;
+  const otpValue = watch('otp');
 
-  const handleNext = () => {
-    if (!isValidOtp) {
+  const isValidOtp = useMemo(() => {
+    return otpValue?.length === OTP_LENGTH;
+  }, [otpValue]);
+
+  const onSubmit = async (data: OtpFormValues) => {
+    if (data.otp.length !== OTP_LENGTH) {
+      setError('otp', {
+        type: 'manual',
+        message: `Please enter the full ${OTP_LENGTH}-digit OTP.`,
+      });
       return;
     }
 
-    console.log('verify otp:', otp, 'phone:', phone);
+    setSubmitError('');
 
-    navigation.navigate('Passcode', {
-      mode: 'create',
-    });
+    const result = await dispatch(signInWithPhone(phone, data.otp));
+
+    if (result?.success) {
+      if (hasPin) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'MainTab' }],
+        });
+        return;
+      }
+
+      navigation.navigate('Passcode', {
+        mode: 'create',
+      });
+      return;
+    }
+
+    setSubmitError(result?.message || 'Invalid OTP. Please try again.');
   };
 
   const handleResend = () => {
     console.log('resend OTP');
+    setValue('otp', '');
+    clearErrors('otp');
+    setSubmitError('');
   };
 
   return (
@@ -71,8 +120,8 @@ const OtpScreen = ({ navigation, route }: Props) => {
         >
           <View style={styles.headerWrapper}>
             <CustomAuthHeader
-              title="เข้าสู่ระบบอย่างปลอดภัย"
-              subtitle="OTP จะถูกส่งไปที่เบอร์โทรศัพท์ของคุณ"
+              title="Sign In"
+              subtitle="An OTP will be sent to your phone number"
             />
 
             <CustomHeaderArrow
@@ -83,18 +132,65 @@ const OtpScreen = ({ navigation, route }: Props) => {
 
           <CustomAuthCard style={styles.cardContent}>
             <View>
-              <CustomFloatingInput
-                label="OTP"
-                placeholder="กรุณาใส่รหัส OTP"
-                value={otp}
-                onChangeText={handleOtpChange}
-                keyboardType="number-pad"
-                maxLength={OTP_LENGTH}
+              <Controller
+                control={control}
+                name="otp"
+                rules={{
+                  required: 'OTP is required.',
+                  validate: value =>
+                    value.length === OTP_LENGTH ||
+                    `Please enter the full ${OTP_LENGTH}-digit OTP.`,
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <CustomFloatingInput
+                    label="OTP"
+                    placeholder="Enter OTP"
+                    value={value}
+                    onChangeText={text => {
+                      const cleaned = text.replace(/\D/g, '').slice(0, OTP_LENGTH);
+                      onChange(cleaned);
+
+                      if (submitError) {
+                        setSubmitError('');
+                      }
+
+                      if (errors.otp) {
+                        clearErrors('otp');
+                      }
+                    }}
+                    keyboardType="number-pad"
+                    maxLength={OTP_LENGTH}
+                  />
+                )}
               />
+
+              {!!errors.otp?.message && (
+                <CustomAppText
+                  style={{
+                    marginTop: 8,
+                    fontSize: 12,
+                    color: colors.error ?? '#DC2626',
+                  }}
+                >
+                  {errors.otp.message}
+                </CustomAppText>
+              )}
+
+              {!errors.otp?.message && !!submitError && (
+                <CustomAppText
+                  style={{
+                    marginTop: 8,
+                    fontSize: 12,
+                    color: colors.error ?? '#DC2626',
+                  }}
+                >
+                  {submitError}
+                </CustomAppText>
+              )}
 
               <View style={styles.row}>
                 <CustomAppText style={styles.refText}>
-                  รหัสอ้างอิง: {refCode}
+                  Ref Code: {refCode}
                 </CustomAppText>
 
                 <TouchableOpacity
@@ -108,26 +204,29 @@ const OtpScreen = ({ navigation, route }: Props) => {
                     color={colors.textMuted}
                   />
                   <CustomAppText style={styles.resendText}>
-                    ส่งรหัส OTP อีกครั้ง
+                    Resend OTP
                   </CustomAppText>
                 </TouchableOpacity>
               </View>
             </View>
 
             <TouchableOpacity
-              style={[styles.button, !isValidOtp && styles.buttonDisabled]}
-              disabled={!isValidOtp}
+              style={[
+                styles.button,
+                (!isValidOtp || isSubmitting) && styles.buttonDisabled,
+              ]}
+              disabled={!isValidOtp || isSubmitting}
               activeOpacity={0.8}
-              onPress={handleNext}
+              onPress={handleSubmit(onSubmit)}
             >
               <CustomAppText
                 variant="button"
                 style={[
                   styles.buttonText,
-                  !isValidOtp && styles.buttonTextDisabled,
+                  (!isValidOtp || isSubmitting) && styles.buttonTextDisabled,
                 ]}
               >
-                ต่อไป
+                Next
               </CustomAppText>
             </TouchableOpacity>
           </CustomAuthCard>
