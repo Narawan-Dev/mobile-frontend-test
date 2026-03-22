@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 import CustomAppText from '../../components/CustomAppText';
 import { styles } from './styles';
+import CustomLogo from '../../components/CustomLogo';
 
 const transactions = [
   { id: '1', date: '15 Feb 2023', amount: 100, status: 'Completed' },
@@ -38,6 +39,7 @@ const HomeScreen = () => {
         <View style={styles.screen}>
           <View style={styles.topSection}>
             <View style={styles.headerRow}>
+              <CustomLogo color="#FFFFFF" />
               <View style={styles.profileRow}>
                 <CustomAppText style={styles.userName}>John Doe</CustomAppText>
                 <View style={styles.avatar}>

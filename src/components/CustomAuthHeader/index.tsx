@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import CustomAppText from '../CustomAppText';
 import { styles } from './styles';
+import CustomLogo from '../CustomLogo';
 
 type AuthHeaderProps = {
   title: string;
@@ -15,9 +16,7 @@ const AuthHeader = ({ title, subtitle }: AuthHeaderProps) => {
       <View style={styles.bottomLeftCircle} />
 
       <View style={styles.logoRow}>
-        <View style={styles.logoDotSmall} />
-        <View style={styles.logoBigCircle} />
-        <View style={styles.logoDotRight} />
+        <CustomLogo color="white" />
       </View>
 
       <CustomAppText variant="title" style={styles.title}>

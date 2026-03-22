@@ -14,6 +14,7 @@ import { CommonActions, useFocusEffect } from '@react-navigation/native';
 import CustomAppText from '../../components/CustomAppText';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { styles } from './styles';
+import CustomLogo from '../../components/CustomLogo';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Passcode'>;
 
@@ -176,12 +177,7 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
           <View style={styles.screen}>
             <View style={styles.content}>
               <View style={styles.logoWrapper}>
-                <View style={styles.logoShape}>
-                  <View style={styles.logoTopRight} />
-                  <View style={styles.logoMiddleLeft} />
-                  <View style={styles.logoBottomLeft} />
-                  <View style={styles.logoBottomRight} />
-                </View>
+                <CustomLogo color="#3c1ecb" />
               </View>
 
               <CustomAppText variant="title" style={styles.title}>

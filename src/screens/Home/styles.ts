@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
   },
   bottomSection: {
     flex: 1,
-    backgroundColor: '#efeff0', // 👈 เปลี่ยนตรงนี้
+    backgroundColor: '#efeff0',
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingHorizontal: 20,
@@ -26,7 +26,7 @@ export const styles = StyleSheet.create({
 
   headerRow: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   profileRow: {
