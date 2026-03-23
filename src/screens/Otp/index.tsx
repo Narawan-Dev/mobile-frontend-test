@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import {
   View,
   TouchableOpacity,
@@ -7,9 +7,8 @@ import {
   Platform,
 } from 'react-native';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
 import CustomAppText from '../../components/CustomAppText';
 import CustomHeaderArrow from '../../components/CustomHeaderArrow';
@@ -22,120 +21,23 @@ import { OTP_LENGTH } from '../../constants/app';
 import { colors } from '../../theme/colors';
 import { styles } from './styles';
 
-import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { requestOtp, signInWithPhone } from '../../store/thunks/authThunks';
-import { RootStackParamList } from '../../navigation/typs';
-
-type Props = NativeStackScreenProps<RootStackParamList, 'Otp'>;
-
-type OtpFormValues = {
-  otp: string;
-};
+import { Props } from './types';
+import { useOtp } from './useOtp';
 
 const OtpScreen = ({ navigation, route }: Props) => {
-  const generateRef = () => {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
-  };
-
-  const { phone } = route.params;
-  const dispatch = useAppDispatch();
-  const { hasPin } = useAppSelector(state => state.auth);
-
-  const [refCode, setRefCode] = useState(generateRef());
-  const [submitError, setSubmitError] = useState('');
-  const [isSigningIn, setIsSigningIn] = useState(false);
-  const [isResending, setIsResending] = useState(false);
-
   const {
     control,
     handleSubmit,
-    watch,
-    setValue,
-    setError,
-    clearErrors,
-    formState: { errors },
-  } = useForm<OtpFormValues>({
-    defaultValues: {
-      otp: '',
-    },
-    mode: 'onChange',
-  });
-
-  const otpValue = watch('otp');
-
-  const isValidOtp = useMemo(() => {
-    return otpValue?.length === OTP_LENGTH;
-  }, [otpValue]);
-
-  const isLoading = isSigningIn || isResending;
-
-  const onSubmit = async (data: OtpFormValues) => {
-    if (isLoading) {
-      return;
-    }
-
-    if (data.otp.length !== OTP_LENGTH) {
-      setError('otp', {
-        type: 'manual',
-        message: `Please enter the full ${OTP_LENGTH}-digit OTP.`,
-      });
-      return;
-    }
-
-    setSubmitError('');
-    setIsSigningIn(true);
-
-    try {
-      const result = await dispatch(signInWithPhone(phone, data.otp));
-
-      if (result?.success) {
-        if (hasPin) {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'MainTab' }],
-          });
-          return;
-        }
-
-        navigation.navigate('Passcode', {
-          mode: 'create',
-        });
-        return;
-      }
-
-      setSubmitError(result?.message || 'Invalid OTP. Please try again.');
-    } catch (error) {
-      setSubmitError('Something went wrong. Please try again.');
-    } finally {
-      setIsSigningIn(false);
-    }
-  };
-
-  const handleResend = async () => {
-    if (isLoading) {
-      return;
-    }
-
-    setSubmitError('');
-    setValue('otp', '');
-    clearErrors('otp');
-    setIsResending(true);
-
-    try {
-      const result = await dispatch(requestOtp(phone));
-
-      if (result?.success) {
-        setRefCode(generateRef());
-        return;
-      }
-
-      setSubmitError(result?.message || 'Failed to resend OTP. Please try again.');
-    } catch (error) {
-      setSubmitError('Something went wrong while resending OTP.');
-    } finally {
-      setIsResending(false);
-    }
-  };
+    errors,
+    submitError,
+    isValidOtp,
+    isLoading,
+    isResending,
+    refCode,
+    onSubmit,
+    handleResend,
+    handleOtpChange,
+  } = useOtp({ navigation, route });
 
   return (
     <>
@@ -185,18 +87,7 @@ const OtpScreen = ({ navigation, route }: Props) => {
                     label="OTP"
                     placeholder="Enter OTP"
                     value={value}
-                    onChangeText={text => {
-                      const cleaned = text.replace(/\D/g, '').slice(0, OTP_LENGTH);
-                      onChange(cleaned);
-
-                      if (submitError) {
-                        setSubmitError('');
-                      }
-
-                      if (errors.otp) {
-                        clearErrors('otp');
-                      }
-                    }}
+                    onChangeText={text => handleOtpChange(text, onChange)}
                     keyboardType="number-pad"
                     maxLength={OTP_LENGTH}
                     editable={!isLoading}
@@ -273,9 +164,7 @@ const OtpScreen = ({ navigation, route }: Props) => {
           </CustomAuthCard>
         </KeyboardAvoidingView>
 
-        <CustomLoadingOverlay
-          visible={isLoading}
-        />
+        <CustomLoadingOverlay visible={isLoading} />
       </SafeAreaView>
     </>
   );

@@ -1,3 +1,5 @@
+import MaterialIcons from '@react-native-vector-icons/material-icons';
+
 export type RootStackParamList = {
   SignIn: undefined;
   Otp: { phone: string };
@@ -13,3 +15,5 @@ export type MainTabParamList = {
   Withdraw: undefined;
   Setting: undefined;
 };
+
+export type MaterialIconName = React.ComponentProps<typeof MaterialIcons>['name'];

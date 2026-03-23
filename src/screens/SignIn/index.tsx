@@ -5,10 +5,8 @@ import {
   StatusBar,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
-  Alert,
 } from 'react-native';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -21,49 +19,23 @@ import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 import { styles } from './styles';
 import { PHONE_LENGTH } from '../../constants/app';
 import { colors } from '../../theme/colors';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { requestOtp } from '../../store/thunks/authThunks';
-import { RootStackParamList } from '../../navigation/typs';
+import { RootStackParamList } from '../../navigation/types';
+import useSignIn from './useSignIn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
-type SignInFormValues = {
-  phone: string;
-};
-
 const SignInScreen = ({ navigation }: Props) => {
-  const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector(state => state.auth);
-
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
-  } = useForm<SignInFormValues>({
-    mode: 'onChange',
-    defaultValues: {
-      phone: '',
-    },
-  });
-
-  const onSubmit = async (values: SignInFormValues) => {
-    if (loading) {
-      return;
-    }
-
-    Keyboard.dismiss();
-
-    const cleanedPhone = values.phone.replace(/\D/g, '').slice(0, PHONE_LENGTH);
-
-    const result = await dispatch(requestOtp(cleanedPhone));
-
-    if (result?.success) {
-      navigation.navigate('Otp', { phone: cleanedPhone });
-      return;
-    }
-
-    Alert.alert('Failed to send OTP', result?.message || 'Please try again');
-  };
+    errors,
+    isValid,
+    loading,
+    error,
+    onSubmit,
+    phoneRules,
+    sanitizePhone,
+  } = useSignIn(navigation);
 
   return (
     <>
@@ -88,21 +60,14 @@ const SignInScreen = ({ navigation }: Props) => {
               <Controller
                 control={control}
                 name="phone"
-                rules={{
-                  required: 'Phone number is required',
-                  pattern: {
-                    value: /^0\d{9}$/,
-                    message: 'Please enter a valid phone number',
-                  },
-                }}
+                rules={phoneRules}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <CustomFloatingInput
                     label="Phone Number"
                     value={value}
                     onBlur={onBlur}
                     onChangeText={(text: string) => {
-                      const cleaned = text.replace(/\D/g, '').slice(0, PHONE_LENGTH);
-                      onChange(cleaned);
+                      onChange(sanitizePhone(text));
                     }}
                     keyboardType="number-pad"
                     maxLength={PHONE_LENGTH}
@@ -141,9 +106,7 @@ const SignInScreen = ({ navigation }: Props) => {
             </TouchableOpacity>
           </CustomAuthCard>
 
-          <CustomLoadingOverlay
-            visible={loading}
-          />
+          <CustomLoadingOverlay visible={loading} />
         </KeyboardAvoidingView>
       </SafeAreaView>
     </>

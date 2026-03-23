@@ -5,7 +5,7 @@ import SignInScreen from '../screens/SignIn';
 import OtpScreen from '../screens/Otp';
 import PasscodeScreen from '../screens/Passcode';
 import MainTabNavigator from './MainTabNavigator';
-import { RootStackParamList } from './typs';
+import { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

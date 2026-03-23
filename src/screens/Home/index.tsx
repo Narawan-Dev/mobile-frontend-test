@@ -1,105 +1,31 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import {
   View,
   StatusBar,
   Image,
   RefreshControl,
   ScrollView,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 
 import CustomAppText from '../../components/CustomAppText';
-import { styles } from './styles';
 import CustomLogo from '../../components/CustomLogo';
+import { styles } from './styles';
 import { colors } from '../../theme/colors';
-import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { setAvailable as setAvailableAction } from '../../store/slices/authSlice';
-import { userApi } from '../../services/api/userApi';
-import { Transaction } from './types';
-
-const defaultTransactions: Transaction[] = [];
+import useHome from './useHome';
+import { formatCurrency } from '../../utils/number';
+import { formatLastUpdated } from '../../utils/date';
 
 const HomeScreen = () => {
-  const token = useAppSelector(s => s.auth.token);
-  const dispatch = useAppDispatch();
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
-
-  const [userName, setUserName] = useState('');
-  const [available, setAvailable] = useState<number | null>(null);
-  const [txns, setTxns] = useState<Transaction[]>(defaultTransactions);
-  const [refreshing, setRefreshing] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-
-  const formatCurrency = (amount: number) => {
-    return `$${amount.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
-  };
-
-  const formatLastUpdated = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const fetchData = useCallback(async () => {
-    if (!token) {
-      return;
-    }
-
-    try {
-      const profile = await userApi.getProfile(token);
-
-      setUserName(
-        profile?.data?.firstname
-          ? `${profile.data.firstname} ${profile.data.lastname ?? ''}`.trim()
-          : profile?.data?.email ?? '',
-      );
-
-      const transactionsRes = await userApi.getTransactions(token);
-
-      const availableFromApi = transactionsRes?.data?.available ?? null;
-      setAvailable(availableFromApi);
-      dispatch(setAvailableAction(availableFromApi));
-
-      const transactions = transactionsRes?.data?.transactions ?? [];
-      setTxns([...transactions].reverse());
-
-      setLastUpdated(new Date());
-    } catch (error) {
-      Alert.alert('Error', (error as Error)?.message || 'Failed to fetch data');
-    }
-  }, [token, dispatch]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  useEffect(() => {
-    if (route.params?.shouldRefetch) {
-      fetchData();
-
-      navigation.setParams({
-        shouldRefetch: undefined,
-      });
-    }
-  }, [route.params?.shouldRefetch, fetchData, navigation]);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-
-    try {
-      await fetchData();
-    } finally {
-      setRefreshing(false);
-    }
-  }, [fetchData]);
+  const {
+    userName,
+    available,
+    txns,
+    refreshing,
+    lastUpdated,
+    onRefresh,
+  } = useHome();
 
   return (
     <>

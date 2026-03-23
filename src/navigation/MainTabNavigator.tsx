@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { AppState, AppStateStatus } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import MaterialIcons from '@react-native-vector-icons/material-icons';
 
 import { colors } from '../theme/colors';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
@@ -12,11 +12,9 @@ import { setPasscodeVerified } from '../store/slices/authSlice';
 import HomeScreen from '../screens/Home';
 import WithdrawScreen from '../screens/Withdraw';
 import SettingScreen from '../screens/Setting';
-import { MainTabParamList, RootStackParamList } from './typs';
+import { MainTabParamList, MaterialIconName, RootStackParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
-
-type MaterialIconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
 const getIconName = (
   routeName: keyof MainTabParamList,
