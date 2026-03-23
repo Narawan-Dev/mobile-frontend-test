@@ -6,12 +6,12 @@ import { useForm } from 'react-hook-form';
 import { useAppSelector } from '../../store/hooks';
 import { userApi } from '../../services/api/userApi';
 import { WithdrawFormValues } from './types';
+import * as secureAuth from '../../services/storage/secureAuth';
 
 const useWithdraw = () => {
   const [loading, setLoading] = useState(false);
 
-  const token = useAppSelector(s => s.auth.token);
-  const availableBalance = useAppSelector(s => s.auth.available ?? 0);
+  const availableBalance = useAppSelector(s => s.auth.availableBalance ?? 0);
   const navigation = useNavigation<any>();
 
   const {
@@ -45,13 +45,15 @@ const useWithdraw = () => {
   };
 
   const onSubmit = async (data: WithdrawFormValues) => {
-    if (!token) {
-      Alert.alert('Not signed in');
-      return;
-    }
-
     try {
       setLoading(true);
+
+      const token = await secureAuth.getToken();
+
+      if (!token) {
+        Alert.alert('Not signed in');
+        return;
+      }
 
       const result = await userApi.withdraw(token, data.amount);
 

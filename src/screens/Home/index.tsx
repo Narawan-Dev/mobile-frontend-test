@@ -20,7 +20,7 @@ import { formatLastUpdated } from '../../utils/date';
 const HomeScreen = () => {
   const {
     userName,
-    available,
+    availableBalance,
     txns,
     refreshing,
     lastUpdated,
@@ -83,7 +83,7 @@ const HomeScreen = () => {
                 numberOfLines={1}
                 adjustsFontSizeToFit
               >
-                {available !== null ? formatCurrency(available) : '-'}
+                {availableBalance !== null ? formatCurrency(availableBalance) : '-'}
               </CustomAppText>
             </View>
 

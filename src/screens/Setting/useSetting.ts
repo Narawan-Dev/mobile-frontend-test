@@ -1,11 +1,16 @@
 import { Alert } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
+import { useAppDispatch } from '../../store/hooks';
+import { logout } from '../../store/slices/authSlice';
+import * as secureAuth from '../../services/storage/secureAuth';
 
 import { Props } from './types';
 
 type UseSettingParams = Pick<Props, 'navigation'>;
 
 export const useSetting = ({ navigation }: UseSettingParams) => {
+  const dispatch = useAppDispatch();
+
   const handleResetPin = () => {
     Alert.alert(
       'Reset PIN',
@@ -39,16 +44,23 @@ export const useSetting = ({ navigation }: UseSettingParams) => {
         {
           text: 'Logout',
           style: 'destructive',
-          onPress: () => {
-            const parentNavigation = navigation.getParent();
+          onPress: async () => {
+            try {
+              await secureAuth.clearToken();
+              await secureAuth.clearPhone();
+            } finally {
+              dispatch(logout());
 
-            if (parentNavigation) {
-              parentNavigation.dispatch(
-                CommonActions.reset({
-                  index: 0,
-                  routes: [{ name: 'SignIn' }],
-                }),
-              );
+              const parentNavigation = navigation.getParent();
+
+              if (parentNavigation) {
+                parentNavigation.dispatch(
+                  CommonActions.reset({
+                    index: 0,
+                    routes: [{ name: 'SignIn' }],
+                  }),
+                );
+              }
             }
           },
         },

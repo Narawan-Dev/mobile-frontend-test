@@ -2,29 +2,29 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { setAvailable as setAvailableAction } from '../../store/slices/authSlice';
+import { useAppDispatch } from '../../store/hooks';
+import { setAvailableBalance as setAvailableAction } from '../../store/slices/authSlice';
 import { userApi } from '../../services/api/userApi';
-import { Transaction } from './types';
+import * as secureAuth from '../../services/storage/secureAuth';
+import { TransactionItem } from '../../services/api/types';
 
 const useHome = () => {
-  const token = useAppSelector(s => s.auth.token);
   const dispatch = useAppDispatch();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
 
   const [userName, setUserName] = useState('');
-  const [available, setAvailable] = useState<number | null>(null);
-  const [txns, setTxns] = useState<Transaction[]>([]);
+  const [availableBalance, setAvailableBalance] = useState<number | null>(null);
+  const [txns, setTxns] = useState<TransactionItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetchData = useCallback(async () => {
-    if (!token) {
-      return;
-    }
-
     try {
+      const token = await secureAuth.getToken();
+
+      if (!token) return;
+
       const profile = await userApi.getProfile(token);
 
       setUserName(
@@ -36,7 +36,7 @@ const useHome = () => {
       const transactionsRes = await userApi.getTransactions(token);
 
       const availableFromApi = transactionsRes?.data?.available ?? null;
-      setAvailable(availableFromApi);
+      setAvailableBalance(availableFromApi);
       dispatch(setAvailableAction(availableFromApi));
 
       const transactions = transactionsRes?.data?.transactions ?? [];
@@ -44,9 +44,9 @@ const useHome = () => {
 
       setLastUpdated(new Date());
     } catch (error) {
-      Alert.alert('Error', (error as Error)?.message || 'Failed to fetch data');
+      Alert.alert('Error', (error as Error).message || 'Failed to fetch data');
     }
-  }, [token, dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
     fetchData();
@@ -74,7 +74,7 @@ const useHome = () => {
 
   return {
     userName,
-    available,
+    availableBalance,
     txns,
     refreshing,
     lastUpdated,

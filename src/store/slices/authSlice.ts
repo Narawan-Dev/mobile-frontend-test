@@ -1,29 +1,25 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type AuthState = {
-  token: string | null;
   phone: string | null;
   isAuthenticated: boolean;
   isHydrated: boolean;
   loading: boolean;
   error: string | null;
   hasPin: boolean;
-  passcode: string | null;
   isPasscodeVerified: boolean;
-  available: number | null;
+  availableBalance: number | null;
 };
 
 const initialState: AuthState = {
-  token: null,
   phone: null,
   isAuthenticated: false,
-  isHydrated: true,
+  isHydrated: false,
   loading: false,
   error: null,
   hasPin: false,
-  passcode: null,
   isPasscodeVerified: false,
-  available: null,
+  availableBalance: null,
 };
 
 const authSlice = createSlice({
@@ -35,12 +31,8 @@ const authSlice = createSlice({
       state.error = null;
     },
 
-    signInSuccess: (
-      state,
-      action: PayloadAction<{ token: string; phone: string }>,
-    ) => {
+    signInSuccess: (state, action: PayloadAction<{ phone: string }>) => {
       state.loading = false;
-      state.token = action.payload.token;
       state.phone = action.payload.phone;
       state.isAuthenticated = true;
       state.error = null;
@@ -51,20 +43,22 @@ const authSlice = createSlice({
       state.error = action.payload;
     },
 
+    otpRequestSuccess: state => {
+      state.loading = false;
+      state.error = null;
+    },
+
     hydrateAuth: (
       state,
       action: PayloadAction<{
-        token: string | null;
         phone: string | null;
+        isAuthenticated: boolean;
         hasPin?: boolean;
-        passcode?: string | null;
       }>,
     ) => {
-      state.token = action.payload.token;
       state.phone = action.payload.phone;
       state.hasPin = action.payload.hasPin ?? false;
-      state.passcode = action.payload.passcode ?? null;
-      state.isAuthenticated = !!action.payload.token;
+      state.isAuthenticated = action.payload.isAuthenticated;
       state.isHydrated = true;
       state.loading = false;
       state.error = null;
@@ -74,12 +68,7 @@ const authSlice = createSlice({
       state.hasPin = action.payload;
     },
 
-    setPasscode: (state, action: PayloadAction<string | null>) => {
-      state.passcode = action.payload;
-      state.hasPin = !!action.payload;
-    },
-
-    setPasscodeVerified: (state, action) => {
+    setPasscodeVerified: (state, action: PayloadAction<boolean>) => {
       state.isPasscodeVerified = action.payload;
     },
 
@@ -87,18 +76,18 @@ const authSlice = createSlice({
       state.error = null;
     },
 
-    setAvailable: (state, action: PayloadAction<number | null>) => {
-      state.available = action.payload;
+    setAvailableBalance: (state, action: PayloadAction<number | null>) => {
+      state.availableBalance = action.payload;
     },
 
     logout: state => {
-      state.token = null;
       state.phone = null;
       state.isAuthenticated = false;
       state.isHydrated = true;
       state.loading = false;
       state.error = null;
-      state.hasPin = false;
+      state.isPasscodeVerified = false;
+      state.availableBalance = null;
     },
   },
 });
@@ -107,12 +96,12 @@ export const {
   signInStart,
   signInSuccess,
   signInFailure,
+  otpRequestSuccess,
   hydrateAuth,
   setHasPin,
-  setPasscode,
   setPasscodeVerified,
   clearAuthError,
-  setAvailable,
+  setAvailableBalance,
   logout,
 } = authSlice.actions;
 

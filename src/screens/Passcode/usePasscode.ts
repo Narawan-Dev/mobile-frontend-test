@@ -2,12 +2,9 @@ import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import {
-  setPasscode,
-  setHasPin,
-  setPasscodeVerified,
-} from '../../store/slices/authSlice';
+import { useAppDispatch } from '../../store/hooks';
+import { setHasPin, setPasscodeVerified } from '../../store/slices/authSlice';
+import * as secureAuth from '../../services/storage/secureAuth';
 import { PASSCODE_LENGTH, SUBMIT_DELAY } from '../../constants/app';
 import { Props } from './types';
 
@@ -16,8 +13,6 @@ type UsePasscodeParams = Pick<Props, 'navigation' | 'route'>;
 export const usePasscode = ({ navigation, route }: UsePasscodeParams) => {
   const { mode, initialPasscode } = route.params;
   const dispatch = useAppDispatch();
-
-  const storedPasscode = useAppSelector(s => s.auth.passcode);
 
   const [passcode, setPasscodeState] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -136,32 +131,78 @@ export const usePasscode = ({ navigation, route }: UsePasscodeParams) => {
           return;
         }
 
-        dispatch(setPasscode(passcode));
-        dispatch(setHasPin(true));
-        dispatch(setPasscodeVerified(true));
-        handlePasscodeSuccess();
+        (async () => {
+          try {
+            const phone = await secureAuth.getPhone();
+
+            if (!phone) {
+              setIsSubmitting(false);
+              Alert.alert('Error', 'No phone found for this session. Please sign in again.');
+              return;
+            }
+
+            await secureAuth.savePasscode(phone, passcode);
+            dispatch(setHasPin(true));
+            dispatch(setPasscodeVerified(true));
+            handlePasscodeSuccess();
+          } catch {
+            setIsSubmitting(false);
+            Alert.alert('Error', 'Failed to save passcode');
+          }
+        })();
+
         return;
       }
 
       if (mode === 'enter') {
-        if (!storedPasscode) {
-          setIsSubmitting(false);
-          Alert.alert('Error', 'No passcode set. Please set a passcode first.', [
-            {
-              text: 'OK',
-              onPress: resetToMainTab,
-            },
-          ]);
-          return;
-        }
+        (async () => {
+          try {
+            const phone = await secureAuth.getPhone();
 
-        if (passcode !== storedPasscode) {
-          handleIncorrectPasscode();
-          return;
-        }
+            if (!phone) {
+              setIsSubmitting(false);
+              Alert.alert('Error', 'No phone found for this session. Please sign in again.');
+              return;
+            }
 
-        dispatch(setPasscodeVerified(true));
-        handlePasscodeSuccess();
+            const stored = await secureAuth.getPasscode(phone);
+
+            if (!stored) {
+              dispatch(setHasPin(false));
+              dispatch(setPasscodeVerified(false));
+              setIsSubmitting(false);
+              setPasscodeState('');
+
+              Alert.alert(
+                'No Passcode',
+                'No passcode is set for this account. Please create a new passcode.',
+                [
+                  {
+                    text: 'OK',
+                    onPress: () =>
+                      navigation.replace('Passcode', {
+                        mode: 'create',
+                      }),
+                  },
+                ],
+              );
+              return;
+            }
+
+            if (passcode !== stored) {
+              handleIncorrectPasscode();
+              return;
+            }
+
+            dispatch(setPasscodeVerified(true));
+            handlePasscodeSuccess();
+          } catch {
+            setIsSubmitting(false);
+            Alert.alert('Error', 'Failed to read passcode');
+          }
+        })();
+
+        return;
       }
     }, SUBMIT_DELAY);
 
@@ -173,8 +214,8 @@ export const usePasscode = ({ navigation, route }: UsePasscodeParams) => {
     isCreateMode,
     isResetMode,
     isConfirmMode,
-    storedPasscode,
     dispatch,
+    navigation,
   ]);
 
   return {

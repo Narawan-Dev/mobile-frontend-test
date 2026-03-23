@@ -36,11 +36,9 @@ const MainTabNavigator = () => {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch();
 
-  const token = useAppSelector(s => s.auth.token);
+  const isAuthenticated = useAppSelector(s => s.auth.isAuthenticated);
   const hasPin = useAppSelector(s => s.auth.hasPin);
-  const isPasscodeVerified = useAppSelector(
-    s => s.auth.isPasscodeVerified,
-  );
+  const isPasscodeVerified = useAppSelector(s => s.auth.isPasscodeVerified);
 
   const appState = useRef<AppStateStatus>(AppState.currentState);
 
@@ -52,27 +50,35 @@ const MainTabNavigator = () => {
         (prevAppState === 'background' || prevAppState === 'inactive') &&
         nextAppState === 'active';
 
-      if (
-        isComingBackToForeground &&
-        token &&
-        hasPin &&
-        isPasscodeVerified
-      ) {
-        dispatch(setPasscodeVerified(false));
-        navigation.navigate('Passcode', { mode: 'enter' });
+      if (isComingBackToForeground && isAuthenticated && hasPin) {
+        const state = navigation.getState();
+        const currentRoute = state.routes[state.index]?.name;
+
+        if (currentRoute !== 'Passcode') {
+          dispatch(setPasscodeVerified(false));
+          navigation.navigate('Passcode', { mode: 'enter' });
+        }
       }
 
       appState.current = nextAppState;
     });
 
     return () => sub.remove();
-  }, [token, hasPin, isPasscodeVerified, navigation, dispatch]);
+  }, [dispatch, hasPin, isAuthenticated, navigation]);
 
   useEffect(() => {
-    if (token && hasPin && !isPasscodeVerified) {
+    const state = navigation.getState();
+    const currentRoute = state.routes[state.index]?.name;
+
+    if (
+      isAuthenticated &&
+      hasPin &&
+      !isPasscodeVerified &&
+      currentRoute !== 'Passcode'
+    ) {
       navigation.navigate('Passcode', { mode: 'enter' });
     }
-  }, [token, hasPin, isPasscodeVerified, navigation]);
+  }, [hasPin, isAuthenticated, isPasscodeVerified, navigation]);
 
   return (
     <Tab.Navigator

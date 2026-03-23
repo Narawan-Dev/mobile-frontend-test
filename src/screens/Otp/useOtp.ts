@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { OTP_LENGTH } from '../../constants/app';
@@ -17,6 +17,8 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
   const dispatch = useAppDispatch();
   const { hasPin } = useAppSelector(state => state.auth);
 
+  console.log('hasPin from store:', hasPin);
+
   const [refCode, setRefCode] = useState(generateRef());
   const [submitError, setSubmitError] = useState('');
   const [isSigningIn, setIsSigningIn] = useState(false);
@@ -25,7 +27,6 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
   const {
     control,
     handleSubmit,
-    watch,
     setValue,
     setError,
     clearErrors,
@@ -38,12 +39,6 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
     reValidateMode: 'onChange',
   });
 
-  const otpValue = watch('otp');
-
-  const isValidOtp = useMemo(() => {
-    return otpValue?.length === OTP_LENGTH;
-  }, [otpValue]);
-
   const isLoading = isSigningIn || isResending;
 
   const otpRules = {
@@ -54,10 +49,6 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
   };
 
   const onSubmit = async (data: OtpFormValues) => {
-    if (isLoading) {
-      return;
-    }
-
     if (data.otp.length !== OTP_LENGTH) {
       setError('otp', {
         type: 'manual',
@@ -71,8 +62,10 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
 
     try {
       const result = await dispatch(signInWithPhone(phone, data.otp));
+      console.log('Sign-in result:', result);
 
       if (result?.success) {
+        console.log('Sign-in successful, hasPin:', hasPin);
         if (hasPin) {
           navigation.reset({
             index: 0,
@@ -91,15 +84,12 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
     } catch (error) {
       setSubmitError('Something went wrong. Please try again.');
     } finally {
+      console.log('Sign-in process completed');
       setIsSigningIn(false);
     }
   };
 
   const handleResend = async () => {
-    if (isLoading) {
-      return;
-    }
-
     setSubmitError('');
     setValue('otp', '');
     clearErrors('otp');
@@ -142,7 +132,6 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
     handleSubmit,
     errors,
     submitError,
-    isValidOtp,
     isLoading,
     isResending,
     refCode,
