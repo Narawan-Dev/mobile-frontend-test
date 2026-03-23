@@ -43,6 +43,9 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
+  amountCardError: {
+    borderColor: colors.error || '#DC2626',
+  },
   currencySymbol: {
     fontSize: 34,
     lineHeight: 40,
@@ -58,6 +61,18 @@ export const styles = StyleSheet.create({
     minWidth: 120,
     textAlign: 'center',
     paddingVertical: 0,
+  },
+  availableText: {
+    marginTop: 8,
+    fontSize: 13,
+    lineHeight: 18,
+    color: colors.textMuted,
+  },
+  errorText: {
+    marginTop: 6,
+    fontSize: 13,
+    lineHeight: 18,
+    color: colors.error || '#DC2626',
   },
   infoCard: {
     backgroundColor: colors.background,

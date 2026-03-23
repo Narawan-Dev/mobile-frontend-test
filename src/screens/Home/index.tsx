@@ -8,13 +8,15 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 
 import CustomAppText from '../../components/CustomAppText';
 import { styles } from './styles';
 import CustomLogo from '../../components/CustomLogo';
 import { colors } from '../../theme/colors';
-import { useAppSelector } from '../../store/hooks';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { setAvailable as setAvailableAction } from '../../store/slices/authSlice';
 import { userApi } from '../../services/api/userApi';
 import { Transaction } from './types';
 
@@ -22,6 +24,9 @@ const defaultTransactions: Transaction[] = [];
 
 const HomeScreen = () => {
   const token = useAppSelector(s => s.auth.token);
+  const dispatch = useAppDispatch();
+  const navigation = useNavigation<any>();
+  const route = useRoute<any>();
 
   const [userName, setUserName] = useState('');
   const [available, setAvailable] = useState<number | null>(null);
@@ -50,6 +55,7 @@ const HomeScreen = () => {
 
     try {
       const profile = await userApi.getProfile(token);
+
       setUserName(
         profile?.data?.firstname
           ? `${profile.data.firstname} ${profile.data.lastname ?? ''}`.trim()
@@ -57,7 +63,10 @@ const HomeScreen = () => {
       );
 
       const transactionsRes = await userApi.getTransactions(token);
-      setAvailable(transactionsRes?.data?.available ?? null);
+
+      const availableFromApi = transactionsRes?.data?.available ?? null;
+      setAvailable(availableFromApi);
+      dispatch(setAvailableAction(availableFromApi));
 
       const transactions = transactionsRes?.data?.transactions ?? [];
       setTxns([...transactions].reverse());
@@ -66,11 +75,21 @@ const HomeScreen = () => {
     } catch (error) {
       Alert.alert('Error', (error as Error)?.message || 'Failed to fetch data');
     }
-  }, [token]);
+  }, [token, dispatch]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    if (route.params?.shouldRefetch) {
+      fetchData();
+
+      navigation.setParams({
+        shouldRefetch: undefined,
+      });
+    }
+  }, [route.params?.shouldRefetch, fetchData, navigation]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

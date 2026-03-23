@@ -10,6 +10,7 @@ export type AuthState = {
   hasPin: boolean;
   passcode: string | null;
   isPasscodeVerified: boolean;
+  available: number | null;
 };
 
 const initialState: AuthState = {
@@ -22,6 +23,7 @@ const initialState: AuthState = {
   hasPin: false,
   passcode: null,
   isPasscodeVerified: false,
+  available: null,
 };
 
 const authSlice = createSlice({
@@ -85,6 +87,10 @@ const authSlice = createSlice({
       state.error = null;
     },
 
+    setAvailable: (state, action: PayloadAction<number | null>) => {
+      state.available = action.payload;
+    },
+
     logout: state => {
       state.token = null;
       state.phone = null;
@@ -106,6 +112,7 @@ export const {
   setPasscode,
   setPasscodeVerified,
   clearAuthError,
+  setAvailable,
   logout,
 } = authSlice.actions;
 

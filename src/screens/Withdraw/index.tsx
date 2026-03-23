@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   TextInput,
@@ -8,6 +8,9 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Controller, useForm } from 'react-hook-form';
+import { useNavigation } from '@react-navigation/native';
+
 import CustomAppText from '../../components/CustomAppText';
 import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 import { styles } from './styles';
@@ -17,28 +20,36 @@ import { userApi } from '../../services/api/userApi';
 
 const FEE_AMOUNT = 5;
 
+type WithdrawFormValues = {
+  amount: string;
+};
+
 const WithdrawScreen = () => {
-  const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
 
   const token = useAppSelector(s => s.auth.token);
+  const availableBalance = useAppSelector(s => s.auth.available ?? 0);
+  const navigation = useNavigation<any>();
 
-  const handleAmountChange = (text: string) => {
-    const cleaned = text.replace(/[^0-9]/g, '');
-    setAmount(cleaned);
-  };
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    watch,
+  } = useForm<WithdrawFormValues>({
+    defaultValues: {
+      amount: '',
+    },
+    mode: 'onChange',
+  });
 
-  const displayAmount = useMemo(() => {
-    if (!amount) {
-      return '';
-    }
+  const watchedAmount = watch('amount');
 
-    return Number(amount).toLocaleString();
-  }, [amount]);
+  const isButtonDisabled =
+    !watchedAmount || Number(watchedAmount) <= 0 || !!errors.amount || loading;
 
-  const isButtonDisabled = !amount || Number(amount) <= 0 || loading;
-
-  const handleWithdraw = async () => {
+  const onSubmit = async (data: WithdrawFormValues) => {
     if (!token) {
       Alert.alert('Not signed in');
       return;
@@ -47,11 +58,22 @@ const WithdrawScreen = () => {
     try {
       setLoading(true);
 
-      const result = await userApi.withdraw(token, amount);
+      const result = await userApi.withdraw(token, data.amount);
 
       if (result?.message === 'success') {
-        Alert.alert('Success', 'Withdrawal successful');
-        setAmount('');
+        reset();
+
+        Alert.alert('Success', 'Withdrawal successful', [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.navigate('Home', {
+                shouldRefetch: true,
+              });
+            },
+          },
+        ]);
+
         return;
       }
 
@@ -84,19 +106,53 @@ const WithdrawScreen = () => {
                 Amount for Withdrawal
               </CustomAppText>
 
-              <View style={styles.amountCard}>
-                <CustomAppText style={styles.currencySymbol}>$</CustomAppText>
+              <Controller
+                control={control}
+                name="amount"
+                rules={{
+                  required: 'Please enter withdrawal amount',
+                  validate: {
+                    greaterThanZero: value =>
+                      Number(value) > 0 || 'Amount must be greater than 0',
+                    maxAvailable: value =>
+                      Number(value) <= availableBalance ||
+                      `Amount cannot exceed available balance ($${availableBalance.toLocaleString()})`,
+                  },
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <>
+                    <View
+                      style={[
+                        styles.amountCard,
+                        errors.amount && styles.amountCardError,
+                      ]}
+                    >
+                      <CustomAppText style={styles.currencySymbol}>
+                        $
+                      </CustomAppText>
 
-                <TextInput
-                  value={displayAmount}
-                  onChangeText={handleAmountChange}
-                  placeholder="0"
-                  placeholderTextColor={colors.disabledText}
-                  keyboardType="number-pad"
-                  style={styles.amountInput}
-                  editable={!loading}
-                />
-              </View>
+                      <TextInput
+                        value={value ? Number(value).toLocaleString() : ''}
+                        onChangeText={text => {
+                          const cleaned = text.replace(/[^0-9]/g, '');
+                          onChange(cleaned);
+                        }}
+                        placeholder="0"
+                        placeholderTextColor={colors.disabledText}
+                        keyboardType="number-pad"
+                        style={styles.amountInput}
+                        editable={!loading}
+                      />
+                    </View>
+
+                    {errors.amount && (
+                      <CustomAppText style={styles.errorText}>
+                        {errors.amount.message}
+                      </CustomAppText>
+                    )}
+                  </>
+                )}
+              />
             </View>
 
             <View style={styles.section}>
@@ -149,7 +205,7 @@ const WithdrawScreen = () => {
                 isButtonDisabled && styles.withdrawButtonDisabled,
               ]}
               disabled={isButtonDisabled}
-              onPress={handleWithdraw}
+              onPress={handleSubmit(onSubmit)}
             >
               <CustomAppText style={styles.withdrawButtonText}>
                 Withdraw
