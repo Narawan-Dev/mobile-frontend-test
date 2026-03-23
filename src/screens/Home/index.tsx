@@ -1,8 +1,14 @@
-import React, { useCallback, useState } from 'react';
-import { View, FlatList, StatusBar, Image } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  View,
+  StatusBar,
+  Image,
+  RefreshControl,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
-import { useFocusEffect } from '@react-navigation/native';
 
 import CustomAppText from '../../components/CustomAppText';
 import { styles } from './styles';
@@ -20,12 +26,21 @@ const HomeScreen = () => {
   const [userName, setUserName] = useState('');
   const [available, setAvailable] = useState<number | null>(null);
   const [txns, setTxns] = useState<Transaction[]>(defaultTransactions);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const formatCurrency = (amount: number) => {
     return `$${amount.toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;
+  };
+
+  const formatLastUpdated = (date: Date) => {
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   const fetchData = useCallback(async () => {
@@ -46,16 +61,26 @@ const HomeScreen = () => {
 
       const transactions = transactionsRes?.data?.transactions ?? [];
       setTxns([...transactions].reverse());
+
+      setLastUpdated(new Date());
     } catch (error) {
-      // swallow for now
+      Alert.alert('Error', (error as Error)?.message || 'Failed to fetch data');
     }
   }, [token]);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [fetchData]),
-  );
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+
+    try {
+      await fetchData();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [fetchData]);
 
   return (
     <>
@@ -86,7 +111,23 @@ const HomeScreen = () => {
             </View>
           </View>
 
-          <View style={styles.bottomSection}>
+          <ScrollView
+            style={styles.bottomSection}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={colors.primary}
+              />
+            }
+          >
+            {lastUpdated && (
+              <CustomAppText style={styles.lastUpdatedText}>
+                Last updated {formatLastUpdated(lastUpdated)}
+              </CustomAppText>
+            )}
+
             <View style={styles.balanceCard}>
               <CustomAppText style={styles.balanceLabel}>
                 Available Balance
@@ -107,49 +148,50 @@ const HomeScreen = () => {
               </CustomAppText>
 
               <View style={styles.historyCard}>
-                <FlatList
-                  data={txns}
-                  keyExtractor={item => String(item.uid)}
-                  showsVerticalScrollIndicator={false}
-                  contentContainerStyle={styles.listContent}
-                  ItemSeparatorComponent={() => <View style={styles.divider} />}
-                  renderItem={({ item }) => (
-                    <View style={styles.transactionItem}>
-                      <View style={styles.transactionIcon}>
-                        <MaterialIcons
-                          name="check-circle"
-                          size={18}
-                          color={colors.success}
-                        />
-                      </View>
+                <View style={styles.listContent}>
+                  {txns.map((item, index) => (
+                    <React.Fragment key={String(item.uid)}>
+                      <View style={styles.transactionItem}>
+                        <View style={styles.transactionIcon}>
+                          <MaterialIcons
+                            name="check-circle"
+                            size={18}
+                            color={colors.success}
+                          />
+                        </View>
 
-                      <View style={styles.transactionLeft}>
-                        <View style={styles.dateRow}>
-                          <CustomAppText style={styles.transactionDate}>
-                            {item.date}
+                        <View style={styles.transactionLeft}>
+                          <View style={styles.dateRow}>
+                            <CustomAppText style={styles.transactionDate}>
+                              {item.date}
+                            </CustomAppText>
+                          </View>
+
+                          <CustomAppText style={styles.transactionStatus}>
+                            Completed
                           </CustomAppText>
                         </View>
 
-                        <CustomAppText style={styles.transactionStatus}>
-                          Completed
-                        </CustomAppText>
+                        <View style={styles.transactionRight}>
+                          <CustomAppText
+                            style={styles.transactionAmount}
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                          >
+                            {formatCurrency(item.amount)}
+                          </CustomAppText>
+                        </View>
                       </View>
 
-                      <View style={styles.transactionRight}>
-                        <CustomAppText
-                          style={styles.transactionAmount}
-                          numberOfLines={1}
-                          adjustsFontSizeToFit
-                        >
-                          {formatCurrency(item.amount)}
-                        </CustomAppText>
-                      </View>
-                    </View>
-                  )}
-                />
+                      {index < txns.length - 1 && (
+                        <View style={styles.divider} />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </View>
               </View>
             </View>
-          </View>
+          </ScrollView>
         </View>
       </SafeAreaView>
     </>

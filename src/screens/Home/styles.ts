@@ -139,4 +139,11 @@ export const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.border,
   },
+  lastUpdatedText: {
+    marginTop: 8,
+    marginRight: 4,
+    fontSize: 12,
+    color: colors.textMuted,
+    textAlign: 'right',
+  },
 });
