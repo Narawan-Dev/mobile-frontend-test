@@ -12,7 +12,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import CustomAppText from '../../components/CustomAppText';
 import CustomAuthHeader from '../../components/CustomAuthHeader';
-import CustomFloatingInput from '../../components/CustomFloatingInput';
+import CustomInput from '../../components/CustomInput';
 import CustomAuthCard from '../../components/CustomAuthCard';
 import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 
@@ -62,7 +62,7 @@ const SignInScreen = ({ navigation }: Props) => {
                 name="phone"
                 rules={phoneRules}
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <CustomFloatingInput
+                  <CustomInput
                     label="Phone Number"
                     value={value}
                     onBlur={onBlur}

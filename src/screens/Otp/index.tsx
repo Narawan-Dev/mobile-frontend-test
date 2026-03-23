@@ -13,7 +13,7 @@ import { Controller } from 'react-hook-form';
 import CustomAppText from '../../components/CustomAppText';
 import CustomHeaderArrow from '../../components/CustomHeaderArrow';
 import CustomAuthHeader from '../../components/CustomAuthHeader';
-import CustomFloatingInput from '../../components/CustomFloatingInput';
+import CustomInput from '../../components/CustomInput';
 import CustomAuthCard from '../../components/CustomAuthCard';
 import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 
@@ -77,7 +77,7 @@ const OtpScreen = ({ navigation, route }: Props) => {
                 name="otp"
                 rules={otpRules}
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <CustomFloatingInput
+                  <CustomInput
                     label="OTP"
                     placeholder="Enter OTP"
                     value={value}

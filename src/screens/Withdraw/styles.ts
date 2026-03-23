@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   amountCardError: {
-    borderColor: colors.error || '#DC2626',
+    borderColor: colors.error,
   },
   currencySymbol: {
     fontSize: 34,
@@ -53,15 +53,32 @@ export const styles = StyleSheet.create({
     marginRight: 4,
     color: colors.textPrimary,
   },
+
+  amountInputContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  amountInputWrapper: {
+    width: '100%',
+  },
+  amountInputInnerWrapper: {
+    minHeight: 0,
+    height: 'auto',
+    borderWidth: 0,
+    backgroundColor: 'transparent',
+    borderRadius: 0,
+  },
   amountInput: {
     fontSize: 34,
     lineHeight: 40,
     fontWeight: '700',
     color: colors.textPrimary,
-    minWidth: 120,
     textAlign: 'center',
+    paddingHorizontal: 0,
     paddingVertical: 0,
+    minHeight: 40,
   },
+
   availableText: {
     marginTop: 8,
     fontSize: 13,
@@ -72,7 +89,7 @@ export const styles = StyleSheet.create({
     marginTop: 6,
     fontSize: 13,
     lineHeight: 18,
-    color: colors.error || '#DC2626',
+    color: colors.error,
   },
   infoCard: {
     backgroundColor: colors.background,

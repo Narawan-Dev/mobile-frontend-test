@@ -84,26 +84,20 @@ export const usePasscode = ({ navigation, route }: UsePasscodeParams) => {
 
   const handlePasscodeMismatch = () => {
     setIsSubmitting(false);
-    Alert.alert('Passcode mismatch', 'Please try again');
     setPasscodeState('');
+    Alert.alert('Error', 'Passcodes do not match');
+  };
+
+  const handleIncorrectPasscode = () => {
+    setIsSubmitting(false);
+    setPasscodeState('');
+    Alert.alert('Error', 'Incorrect passcode');
   };
 
   const handlePasscodeSuccess = () => {
     setIsSubmitting(false);
-
-    const successMessage =
-      mode === 'enter'
-        ? 'Passcode accepted'
-        : isConfirmResetMode
-          ? 'PIN has been reset successfully'
-          : 'Passcode has been set successfully';
-
-    Alert.alert('Success', successMessage, [
-      {
-        text: 'OK',
-        onPress: resetToMainTab,
-      },
-    ]);
+    setPasscodeState('');
+    resetToMainTab();
   };
 
   const handlePressNumber = (num: string) => {
@@ -136,12 +130,12 @@ export const usePasscode = ({ navigation, route }: UsePasscodeParams) => {
         return;
       }
 
-      if (isConfirmMode && passcode !== initialPasscode) {
-        handlePasscodeMismatch();
-        return;
-      }
-
       if (isConfirmMode) {
+        if (passcode !== initialPasscode) {
+          handlePasscodeMismatch();
+          return;
+        }
+
         dispatch(setPasscode(passcode));
         dispatch(setHasPin(true));
         dispatch(setPasscodeVerified(true));
@@ -152,7 +146,7 @@ export const usePasscode = ({ navigation, route }: UsePasscodeParams) => {
       if (mode === 'enter') {
         if (!storedPasscode) {
           setIsSubmitting(false);
-          Alert.alert('No passcode set', 'Please set a passcode first', [
+          Alert.alert('Error', 'No passcode set. Please set a passcode first.', [
             {
               text: 'OK',
               onPress: resetToMainTab,
@@ -162,7 +156,7 @@ export const usePasscode = ({ navigation, route }: UsePasscodeParams) => {
         }
 
         if (passcode !== storedPasscode) {
-          handlePasscodeMismatch();
+          handleIncorrectPasscode();
           return;
         }
 

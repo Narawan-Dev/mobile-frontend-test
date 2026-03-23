@@ -1,15 +1,10 @@
 import React from 'react';
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  StatusBar,
-  ScrollView,
-} from 'react-native';
+import { View, TouchableOpacity, StatusBar, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Controller } from 'react-hook-form';
 
 import CustomAppText from '../../components/CustomAppText';
+import CustomInput from '../../components/CustomInput';
 import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 import { styles } from './styles';
 import { colors } from '../../theme/colors';
@@ -66,16 +61,22 @@ const WithdrawScreen = () => {
                         $
                       </CustomAppText>
 
-                      <TextInput
-                        value={getDisplayAmount(value)}
-                        onBlur={onBlur}
-                        onChangeText={text => handleAmountChange(text, onChange)}
-                        placeholder="0"
-                        placeholderTextColor={colors.disabledText}
-                        keyboardType="number-pad"
-                        style={styles.amountInput}
-                        editable={!loading}
-                      />
+                      <View style={styles.amountInputContainer}>
+                        <CustomInput
+                          value={getDisplayAmount(value)}
+                          onBlur={onBlur}
+                          onChangeText={text => handleAmountChange(text, onChange)}
+                          placeholder="0"
+                          placeholderTextColor={colors.disabledText}
+                          keyboardType="number-pad"
+                          editable={!loading}
+                          labelMode="hidden"
+                          inputAlign="center"
+                          containerStyle={styles.amountInputWrapper}
+                          wrapperStyle={styles.amountInputInnerWrapper}
+                          inputStyle={styles.amountInput}
+                        />
+                      </View>
                     </View>
 
                     {errors.amount && (
@@ -125,7 +126,7 @@ const WithdrawScreen = () => {
                 <View style={[styles.infoRow, styles.lastInfoRow]}>
                   <CustomAppText style={styles.infoLabel}>Fee</CustomAppText>
                   <CustomAppText style={styles.feeValue}>
-                    ${FEE_AMOUNT}
+                    -${FEE_AMOUNT}
                   </CustomAppText>
                 </View>
               </View>
