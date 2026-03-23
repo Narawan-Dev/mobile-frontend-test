@@ -54,7 +54,7 @@ const WithdrawScreen = () => {
                 control={control}
                 name="amount"
                 rules={amountRules}
-                render={({ field: { onChange, value } }) => (
+                render={({ field: { onChange, onBlur, value } }) => (
                   <>
                     <View
                       style={[
@@ -68,6 +68,7 @@ const WithdrawScreen = () => {
 
                       <TextInput
                         value={getDisplayAmount(value)}
+                        onBlur={onBlur}
                         onChangeText={text => handleAmountChange(text, onChange)}
                         placeholder="0"
                         placeholderTextColor={colors.disabledText}

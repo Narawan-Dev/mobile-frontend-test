@@ -15,7 +15,8 @@ const useSignIn = (navigation: SignInNavigationProp) => {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<SignInFormValues>({
-    mode: 'onChange',
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       phone: '',
     },

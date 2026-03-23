@@ -88,9 +88,9 @@ const SignInScreen = ({ navigation }: Props) => {
             <TouchableOpacity
               style={[
                 styles.button,
-                (!isValid || loading) && styles.buttonDisabled,
+                loading && styles.buttonDisabled,
               ]}
-              disabled={!isValid || loading}
+              disabled={loading}
               activeOpacity={0.85}
               onPress={handleSubmit(onSubmit)}
             >
@@ -98,7 +98,7 @@ const SignInScreen = ({ navigation }: Props) => {
                 variant="button"
                 style={[
                   styles.buttonText,
-                  (!isValid || loading) && styles.buttonTextDisabled,
+                  loading && styles.buttonTextDisabled,
                 ]}
               >
                 Send OTP

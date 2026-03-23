@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
@@ -24,19 +24,13 @@ const useWithdraw = () => {
     defaultValues: {
       amount: '',
     },
-    mode: 'onChange',
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
   });
 
   const watchedAmount = watch('amount');
 
-  const isButtonDisabled = useMemo(() => {
-    return (
-      !watchedAmount ||
-      Number(watchedAmount) <= 0 ||
-      !!errors.amount ||
-      loading
-    );
-  }, [watchedAmount, errors.amount, loading]);
+  const isButtonDisabled = loading;
 
   const handleAmountChange = (
     text: string,
@@ -102,6 +96,7 @@ const useWithdraw = () => {
     errors,
     loading,
     availableBalance,
+    watchedAmount,
     isButtonDisabled,
     handleSubmit,
     onSubmit,

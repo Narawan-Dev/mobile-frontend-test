@@ -34,7 +34,8 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
     defaultValues: {
       otp: '',
     },
-    mode: 'onChange',
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
   });
 
   const otpValue = watch('otp');
@@ -44,6 +45,13 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
   }, [otpValue]);
 
   const isLoading = isSigningIn || isResending;
+
+  const otpRules = {
+    required: 'OTP is required',
+    validate: (value: string) =>
+      value.length === OTP_LENGTH ||
+      `Please enter the full ${OTP_LENGTH}-digit OTP.`,
+  };
 
   const onSubmit = async (data: OtpFormValues) => {
     if (isLoading) {
@@ -138,6 +146,7 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
     isLoading,
     isResending,
     refCode,
+    otpRules,
     onSubmit,
     handleResend,
     handleOtpChange,

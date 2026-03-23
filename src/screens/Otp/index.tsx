@@ -17,7 +17,6 @@ import CustomFloatingInput from '../../components/CustomFloatingInput';
 import CustomAuthCard from '../../components/CustomAuthCard';
 import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 
-import { OTP_LENGTH } from '../../constants/app';
 import { colors } from '../../theme/colors';
 import { styles } from './styles';
 
@@ -30,10 +29,10 @@ const OtpScreen = ({ navigation, route }: Props) => {
     handleSubmit,
     errors,
     submitError,
-    isValidOtp,
     isLoading,
     isResending,
     refCode,
+    otpRules,
     onSubmit,
     handleResend,
     handleOtpChange,
@@ -76,36 +75,21 @@ const OtpScreen = ({ navigation, route }: Props) => {
               <Controller
                 control={control}
                 name="otp"
-                rules={{
-                  required: 'OTP is required.',
-                  validate: value =>
-                    value.length === OTP_LENGTH ||
-                    `Please enter the full ${OTP_LENGTH}-digit OTP.`,
-                }}
-                render={({ field: { onChange, value } }) => (
+                rules={otpRules}
+                render={({ field: { onChange, onBlur, value } }) => (
                   <CustomFloatingInput
                     label="OTP"
                     placeholder="Enter OTP"
                     value={value}
+                    onBlur={onBlur}
                     onChangeText={text => handleOtpChange(text, onChange)}
                     keyboardType="number-pad"
-                    maxLength={OTP_LENGTH}
+                    maxLength={6}
                     editable={!isLoading}
+                    errorText={errors.otp?.message}
                   />
                 )}
               />
-
-              {!!errors.otp?.message && (
-                <CustomAppText
-                  style={{
-                    marginTop: 8,
-                    fontSize: 12,
-                    color: colors.error ?? '#DC2626',
-                  }}
-                >
-                  {errors.otp.message}
-                </CustomAppText>
-              )}
 
               {!errors.otp?.message && !!submitError && (
                 <CustomAppText
@@ -145,9 +129,9 @@ const OtpScreen = ({ navigation, route }: Props) => {
             <TouchableOpacity
               style={[
                 styles.button,
-                (!isValidOtp || isLoading) && styles.buttonDisabled,
+                isLoading && styles.buttonDisabled,
               ]}
-              disabled={!isValidOtp || isLoading}
+              disabled={isLoading}
               activeOpacity={0.8}
               onPress={handleSubmit(onSubmit)}
             >
@@ -155,7 +139,7 @@ const OtpScreen = ({ navigation, route }: Props) => {
                 variant="button"
                 style={[
                   styles.buttonText,
-                  (!isValidOtp || isLoading) && styles.buttonTextDisabled,
+                  isLoading && styles.buttonTextDisabled,
                 ]}
               >
                 Next
