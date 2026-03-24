@@ -26,7 +26,6 @@ const useWithdraw = () => {
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
     setValue,
   } = useForm<WithdrawFormValues>({
     defaultValues: {
@@ -35,8 +34,6 @@ const useWithdraw = () => {
     mode: 'onBlur',
     reValidateMode: 'onChange',
   });
-
-  const watchedAmount = watch('amount');
 
   const isButtonDisabled = loading;
 

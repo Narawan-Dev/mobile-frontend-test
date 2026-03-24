@@ -88,7 +88,7 @@ const WithdrawScreen = () => {
                           onChangeText={text =>
                             handleAmountChange(text, onChange)
                           }
-                          placeholder="0"
+                          placeholder="0.00"
                           placeholderTextColor={colors.disabledText}
                           keyboardType="decimal-pad"
                           editable={!loading}
