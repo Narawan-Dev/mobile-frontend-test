@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   View,
-  TouchableOpacity,
   StatusBar,
   KeyboardAvoidingView,
   Platform,
@@ -14,6 +13,7 @@ import CustomAppText from '../../components/CustomAppText';
 import CustomAuthHeader from '../../components/CustomAuthHeader';
 import CustomInput from '../../components/CustomInput';
 import CustomAuthCard from '../../components/CustomAuthCard';
+import CustomButton from '../../components/CustomButton';
 import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 
 import { styles } from './styles';
@@ -80,30 +80,21 @@ const SignInScreen = ({ navigation }: Props) => {
             </View>
 
             {!!error && !errors.phone && (
-              <CustomAppText style={styles.apiErrorText}>
+              <CustomAppText
+                variant="body"
+                color={colors.error}
+                style={styles.apiErrorText}
+              >
                 {error}
               </CustomAppText>
             )}
 
-            <TouchableOpacity
-              style={[
-                styles.button,
-                loading && styles.buttonDisabled,
-              ]}
+            <CustomButton
+              title="Send OTP"
               disabled={loading}
-              activeOpacity={0.85}
               onPress={handleSubmit(onSubmit)}
-            >
-              <CustomAppText
-                variant="button"
-                style={[
-                  styles.buttonText,
-                  loading && styles.buttonTextDisabled,
-                ]}
-              >
-                Send OTP
-              </CustomAppText>
-            </TouchableOpacity>
+              containerStyle={styles.button}
+            />
           </CustomAuthCard>
 
           <CustomLoadingOverlay visible={loading} />

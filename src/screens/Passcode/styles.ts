@@ -34,16 +34,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 18,
-    color: colors.textPrimary,
-    textAlign: 'center',
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-    lineHeight: 22,
     paddingHorizontal: 24,
   },
   dotsWrapper: {
@@ -91,9 +84,5 @@ export const styles = StyleSheet.create({
   },
   keyDisabled: {
     opacity: 0.4,
-  },
-  keyText: {
-    fontSize: 24,
-    color: colors.textPrimary,
   },
 });

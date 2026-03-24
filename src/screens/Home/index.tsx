@@ -42,7 +42,12 @@ const HomeScreen = () => {
               <CustomLogo color={colors.background} />
 
               <View style={styles.profileRow}>
-                <CustomAppText style={styles.userName}>
+                <CustomAppText
+                  variant="sectionTitle"
+                  color={colors.background}
+                  style={styles.userName}
+                  numberOfLines={1}
+                >
                   {userName || ''}
                 </CustomAppText>
 
@@ -58,6 +63,7 @@ const HomeScreen = () => {
 
           <ScrollView
             style={styles.bottomSection}
+            contentContainerStyle={styles.bottomContent}
             showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl
@@ -68,27 +74,44 @@ const HomeScreen = () => {
             }
           >
             {lastUpdated && (
-              <CustomAppText style={styles.lastUpdatedText}>
+              <CustomAppText
+                variant="caption"
+                color={colors.textMuted}
+                align="right"
+                style={styles.lastUpdatedText}
+              >
                 Last updated {formatLastUpdated(lastUpdated)}
               </CustomAppText>
             )}
 
             <View style={styles.balanceCard}>
-              <CustomAppText style={styles.balanceLabel}>
+              <CustomAppText
+                variant="body"
+                color={colors.textMuted}
+                style={styles.balanceLabel}
+              >
                 Available Balance
               </CustomAppText>
 
               <CustomAppText
+                variant="amount"
+                color={colors.textPrimary}
                 style={styles.balanceAmount}
                 numberOfLines={1}
                 adjustsFontSizeToFit
               >
-                {availableBalance !== null ? formatCurrency(availableBalance) : '-'}
+                {availableBalance !== null
+                  ? formatCurrency(availableBalance)
+                  : '-'}
               </CustomAppText>
             </View>
 
             <View style={styles.historySection}>
-              <CustomAppText style={styles.sectionTitle}>
+              <CustomAppText
+                variant="sectionTitle"
+                color={colors.textPrimary}
+                style={styles.sectionTitle}
+              >
                 Transaction History
               </CustomAppText>
 
@@ -107,18 +130,28 @@ const HomeScreen = () => {
 
                         <View style={styles.transactionLeft}>
                           <View style={styles.dateRow}>
-                            <CustomAppText style={styles.transactionDate}>
+                            <CustomAppText
+                              variant="bodyMedium"
+                              color={colors.textPrimary}
+                              style={styles.transactionDate}
+                            >
                               {item.date}
                             </CustomAppText>
                           </View>
 
-                          <CustomAppText style={styles.transactionStatus}>
+                          <CustomAppText
+                            variant="caption"
+                            color={colors.textMuted}
+                            style={styles.transactionStatus}
+                          >
                             Completed
                           </CustomAppText>
                         </View>
 
                         <View style={styles.transactionRight}>
                           <CustomAppText
+                            variant="bodyMedium"
+                            color={colors.textPrimary}
                             style={styles.transactionAmount}
                             numberOfLines={1}
                             adjustsFontSizeToFit

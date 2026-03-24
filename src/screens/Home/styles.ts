@@ -21,8 +21,11 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.backgroundSecondary,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
+  },
+  bottomContent: {
     paddingHorizontal: 20,
     paddingTop: 20,
+    paddingBottom: 24,
   },
   headerRow: {
     flexDirection: 'row',
@@ -32,6 +35,8 @@ export const styles = StyleSheet.create({
   profileRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexShrink: 1,
+    marginLeft: 16,
   },
   avatar: {
     width: 52,
@@ -48,9 +53,12 @@ export const styles = StyleSheet.create({
     borderRadius: 999,
   },
   userName: {
-    fontSize: 20,
-    color: colors.background,
-    fontWeight: '700',
+    flexShrink: 1,
+  },
+  lastUpdatedText: {
+    marginTop: 8,
+    marginRight: 4,
+    marginBottom: 12,
   },
   balanceCard: {
     backgroundColor: colors.background,
@@ -61,24 +69,14 @@ export const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   balanceLabel: {
-    fontSize: 14,
-    color: colors.textMuted,
     marginBottom: 4,
   },
-  balanceAmount: {
-    fontSize: 26,
-    color: colors.textPrimary,
-    fontWeight: '700',
-  },
+  balanceAmount: {},
   historySection: {
     flex: 1,
-    marginBottom: 0,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
     marginBottom: 12,
-    color: colors.textPrimary,
   },
   historyCard: {
     flex: 1,
@@ -118,32 +116,16 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  transactionDate: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.textPrimary,
-  },
+  transactionDate: {},
   transactionStatus: {
-    fontSize: 12,
-    color: colors.textMuted,
     marginTop: 4,
   },
   transactionAmount: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.textPrimary,
     textAlign: 'right',
     width: '100%',
   },
   divider: {
     height: 1,
     backgroundColor: colors.border,
-  },
-  lastUpdatedText: {
-    marginTop: 8,
-    marginRight: 4,
-    fontSize: 12,
-    color: colors.textMuted,
-    textAlign: 'right',
   },
 });

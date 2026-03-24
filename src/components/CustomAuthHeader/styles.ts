@@ -66,11 +66,10 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   title: {
-    color: colors.background,
+    color: colors.textSecondary,
     marginBottom: 8,
   },
   subtitle: {
     color: colors.textSubTitle,
-    lineHeight: 22,
   },
 });

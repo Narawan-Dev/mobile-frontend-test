@@ -22,7 +22,13 @@ const SettingScreen = ({ navigation }: Props) => {
 
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          <CustomAppText style={styles.title}>Settings</CustomAppText>
+          <CustomAppText
+            variant="heading"
+            color={colors.textPrimary}
+            style={styles.title}
+          >
+            Settings
+          </CustomAppText>
 
           <View style={styles.listArea}>
             <TouchableOpacity
@@ -36,7 +42,13 @@ const SettingScreen = ({ navigation }: Props) => {
                   size={22}
                   color={colors.textPrimary}
                 />
-                <CustomAppText style={styles.itemText}>Reset PIN</CustomAppText>
+
+                <CustomAppText
+                  variant="bodyLarge"
+                  color={colors.textPrimary}
+                >
+                  Reset PIN
+                </CustomAppText>
               </View>
 
               <MaterialIcons
@@ -59,7 +71,13 @@ const SettingScreen = ({ navigation }: Props) => {
                   size={22}
                   color={colors.textPrimary}
                 />
-                <CustomAppText style={styles.itemText}>Logout</CustomAppText>
+
+                <CustomAppText
+                  variant="bodyLarge"
+                  color={colors.textPrimary}
+                >
+                  Logout
+                </CustomAppText>
               </View>
 
               <MaterialIcons

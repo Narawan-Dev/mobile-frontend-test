@@ -50,7 +50,12 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
       onPress={() => handlePressNumber(value)}
       disabled={isSubmitting}
     >
-      <CustomAppText style={styles.keyText}>{value}</CustomAppText>
+      <CustomAppText
+        variant="heading"
+        color={colors.textPrimary}
+      >
+        {value}
+      </CustomAppText>
     </TouchableOpacity>
   );
 
@@ -76,11 +81,21 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
                 <CustomLogo color={colors.primary} />
               </View>
 
-              <CustomAppText variant="title" style={styles.title}>
+              <CustomAppText
+                variant="sectionTitle"
+                color={colors.textPrimary}
+                align="center"
+                style={styles.title}
+              >
                 {title}
               </CustomAppText>
 
-              <CustomAppText variant="subtitle" style={styles.subtitle}>
+              <CustomAppText
+                variant="body"
+                color={colors.textMuted}
+                align="center"
+                style={styles.subtitle}
+              >
                 {subtitle}
               </CustomAppText>
 

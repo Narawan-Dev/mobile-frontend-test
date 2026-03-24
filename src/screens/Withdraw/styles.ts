@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { colors } from '../../theme/colors';
+import { fonts } from '../../theme/fonts';
 
 export const styles = StyleSheet.create({
   safeArea: {
@@ -16,21 +17,13 @@ export const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   headerTitle: {
-    fontSize: 26,
-    lineHeight: 32,
-    fontWeight: '700',
-    textAlign: 'center',
     marginBottom: 28,
-    color: colors.textPrimary,
   },
   section: {
     marginBottom: 22,
   },
   sectionLabel: {
-    fontSize: 18,
-    fontWeight: '700',
     marginBottom: 12,
-    color: colors.textPrimary,
   },
   amountCard: {
     backgroundColor: colors.background,
@@ -47,13 +40,8 @@ export const styles = StyleSheet.create({
     borderColor: colors.error,
   },
   currencySymbol: {
-    fontSize: 34,
-    lineHeight: 40,
-    fontWeight: '700',
     marginRight: 4,
-    color: colors.textPrimary,
   },
-
   amountInputContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -69,27 +57,20 @@ export const styles = StyleSheet.create({
     borderRadius: 0,
   },
   amountInput: {
-    fontSize: 34,
-    lineHeight: 40,
-    fontWeight: '700',
+    fontFamily: fonts.semiBold,
+    fontSize: 32,
+    lineHeight: 50,
     color: colors.textPrimary,
     textAlign: 'center',
     paddingHorizontal: 0,
     paddingVertical: 0,
     minHeight: 40,
   },
-
   availableText: {
     marginTop: 8,
-    fontSize: 13,
-    lineHeight: 18,
-    color: colors.textMuted,
   },
   errorText: {
     marginTop: 6,
-    fontSize: 13,
-    lineHeight: 18,
-    color: colors.error,
   },
   infoCard: {
     backgroundColor: colors.background,
@@ -109,41 +90,5 @@ export const styles = StyleSheet.create({
   },
   lastInfoRow: {
     borderBottomWidth: 0,
-  },
-  infoLabel: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-    color: colors.textMuted,
-  },
-  infoValue: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '700',
-    color: colors.textPrimary,
-  },
-  feeValue: {
-    fontSize: 15,
-    lineHeight: 20,
-    fontWeight: '700',
-    color: colors.primary,
-  },
-  withdrawButton: {
-    backgroundColor: colors.primary,
-    minHeight: 54,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 8,
-    marginBottom: 20,
-  },
-  withdrawButtonDisabled: {
-    opacity: 0.5,
-  },
-  withdrawButtonText: {
-    fontSize: 16,
-    lineHeight: 22,
-    fontWeight: '700',
-    color: colors.background,
   },
 });

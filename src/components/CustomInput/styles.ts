@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { colors } from '../../theme/colors';
+import { typography } from '../../theme/typography';
 
 export const styles = StyleSheet.create({
   wrapper: {
@@ -17,26 +18,18 @@ export const styles = StyleSheet.create({
   wrapperError: {
     borderColor: colors.error,
   },
-
   inlineLabel: {
     marginBottom: 8,
-    fontSize: 12,
-    color: colors.textMuted,
   },
-
   floatingLabel: {
     position: 'absolute',
     top: -8,
     zIndex: 10,
-    fontSize: 12,
-    color: colors.textMuted,
     backgroundColor: colors.background,
     paddingHorizontal: 6,
   },
-
   labelLeft: {
     left: 14,
-    right: undefined,
     textAlign: 'left',
     alignSelf: 'flex-start',
   },
@@ -48,16 +41,14 @@ export const styles = StyleSheet.create({
   },
   labelRight: {
     right: 14,
-    left: undefined,
     textAlign: 'right',
     alignSelf: 'flex-end',
   },
-
   input: {
+    ...typography.input,
     minHeight: 64,
     paddingHorizontal: 16,
     color: colors.textPrimary,
-    fontSize: 18,
   },
   inputLeft: {
     textAlign: 'left',
@@ -68,11 +59,8 @@ export const styles = StyleSheet.create({
   inputRight: {
     textAlign: 'right',
   },
-
   errorText: {
     marginTop: 6,
     marginLeft: 4,
-    fontSize: 12,
-    color: colors.error,
   },
 });

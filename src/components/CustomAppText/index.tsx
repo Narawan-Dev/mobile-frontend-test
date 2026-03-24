@@ -1,26 +1,37 @@
 import React from 'react';
-import { Text, TextProps, StyleSheet, StyleProp, TextStyle } from 'react-native';
+import { Text, TextProps, StyleProp, TextStyle } from 'react-native';
 import { typography } from '../../theme/typography';
-import { styles } from './styles';
+import { colors } from '../../theme/colors';
 
-type Variant = 'title' | 'subtitle' | 'label' | 'button';
+type Variant = keyof typeof typography;
 
-interface AppTextProps extends TextProps {
+type Props = TextProps & {
   variant?: Variant;
+  align?: 'left' | 'center' | 'right';
+  color?: string;
   style?: StyleProp<TextStyle>;
-}
+};
 
-const AppText = ({
-  children,
-  variant = 'subtitle',
+const CustomAppText = ({
+  variant = 'body',
+  align = 'left',
+  color = colors.textPrimary,
   style,
+  children,
   ...props
-}: AppTextProps) => {
+}: Props) => {
   return (
-    <Text {...props} style={[styles.base, typography[variant], style]}>
+    <Text
+      {...props}
+      style={[
+        typography[variant],
+        { textAlign: align, color },
+        style,
+      ]}
+    >
       {children}
     </Text>
   );
 };
 
-export default AppText;
+export default CustomAppText;

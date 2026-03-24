@@ -8,8 +8,8 @@ import {
   ViewStyle,
 } from 'react-native';
 import CustomAppText from '../CustomAppText';
-import { typography } from '../../theme/typography';
 import { styles } from './styles';
+import { colors } from '../../theme/colors';
 
 type LabelMode = 'floating' | 'inline' | 'hidden';
 type HorizontalAlign = 'left' | 'center' | 'right';
@@ -38,17 +38,14 @@ const CustomInput = forwardRef<TextInput, Props>(
       onFocus,
       onBlur,
       style,
-
       labelMode = 'floating',
       labelAlign = 'left',
       inputAlign = 'left',
-
       containerStyle,
       wrapperStyle,
       labelStyle,
       inputStyle,
       errorStyle,
-
       placeholder,
       ...props
     },
@@ -72,7 +69,7 @@ const CustomInput = forwardRef<TextInput, Props>(
       }
 
       if (labelMode === 'floating') {
-        return '';
+        return focused || hasValue ? '' : label;
       }
 
       if (labelMode === 'hidden') {
@@ -80,7 +77,7 @@ const CustomInput = forwardRef<TextInput, Props>(
       }
 
       return '';
-    }, [placeholder, labelMode, label]);
+    }, [placeholder, labelMode, label, focused, hasValue]);
 
     const handleFocus: TextInputProps['onFocus'] = e => {
       setFocused(true);
@@ -121,6 +118,7 @@ const CustomInput = forwardRef<TextInput, Props>(
         {shouldShowInlineLabel && (
           <CustomAppText
             variant="label"
+            color={colors.textMuted}
             style={[styles.inlineLabel, getLabelAlignStyle(), labelStyle]}
           >
             {label}
@@ -138,6 +136,7 @@ const CustomInput = forwardRef<TextInput, Props>(
           {shouldShowFloatingLabel && (
             <CustomAppText
               variant="label"
+              color={colors.textMuted}
               style={[styles.floatingLabel, getLabelAlignStyle(), labelStyle]}
             >
               {label}
@@ -147,15 +146,9 @@ const CustomInput = forwardRef<TextInput, Props>(
           <TextInput
             ref={ref}
             value={value}
-            style={[
-              styles.input,
-              typography.input,
-              getInputAlignStyle(),
-              inputStyle,
-              style,
-            ]}
+            style={[styles.input, getInputAlignStyle(), inputStyle, style]}
             placeholder={resolvedPlaceholder}
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.disabledText}
             onFocus={handleFocus}
             onBlur={handleBlur}
             {...props}
@@ -163,7 +156,11 @@ const CustomInput = forwardRef<TextInput, Props>(
         </View>
 
         {!!errorText && (
-          <CustomAppText style={[styles.errorText, errorStyle]}>
+          <CustomAppText
+            variant="errorText"
+            color={colors.error}
+            style={[styles.errorText, errorStyle]}
+          >
             {errorText}
           </CustomAppText>
         )}

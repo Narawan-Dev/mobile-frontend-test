@@ -1,15 +1,17 @@
 import React from 'react';
-import { View, TouchableOpacity, StatusBar, ScrollView } from 'react-native';
+import { View, StatusBar, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Controller } from 'react-hook-form';
 
 import CustomAppText from '../../components/CustomAppText';
 import CustomInput from '../../components/CustomInput';
+import CustomButton from '../../components/CustomButton';
 import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 import { styles } from './styles';
 import { colors } from '../../theme/colors';
 import useWithdraw from './useWithdraw';
 import { FEE_AMOUNT } from '../../constants/app';
+import { formatCurrency } from '../../utils/number';
 
 const WithdrawScreen = () => {
   const {
@@ -38,10 +40,21 @@ const WithdrawScreen = () => {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            <CustomAppText style={styles.headerTitle}>Withdrawal</CustomAppText>
+            <CustomAppText
+              variant="heading"
+              align="center"
+              color={colors.textPrimary}
+              style={styles.headerTitle}
+            >
+              Withdrawal
+            </CustomAppText>
 
             <View style={styles.section}>
-              <CustomAppText style={styles.sectionLabel}>
+              <CustomAppText
+                variant="sectionTitle"
+                color={colors.textPrimary}
+                style={styles.sectionLabel}
+              >
                 Amount for Withdrawal
               </CustomAppText>
 
@@ -57,7 +70,10 @@ const WithdrawScreen = () => {
                         errors.amount && styles.amountCardError,
                       ]}
                     >
-                      <CustomAppText style={styles.currencySymbol}>
+                      <CustomAppText
+                        variant="display"
+                        style={styles.currencySymbol}
+                      >
                         $
                       </CustomAppText>
 
@@ -68,7 +84,7 @@ const WithdrawScreen = () => {
                           onChangeText={text => handleAmountChange(text, onChange)}
                           placeholder="0"
                           placeholderTextColor={colors.disabledText}
-                          keyboardType="number-pad"
+                          keyboardType="decimal-pad"
                           editable={!loading}
                           labelMode="hidden"
                           inputAlign="center"
@@ -80,7 +96,11 @@ const WithdrawScreen = () => {
                     </View>
 
                     {errors.amount && (
-                      <CustomAppText style={styles.errorText}>
+                      <CustomAppText
+                        variant="errorText"
+                        color={colors.error}
+                        style={styles.errorText}
+                      >
                         {errors.amount.message}
                       </CustomAppText>
                     )}
@@ -90,61 +110,70 @@ const WithdrawScreen = () => {
             </View>
 
             <View style={styles.section}>
-              <CustomAppText style={styles.sectionLabel}>
+              <CustomAppText
+                variant="sectionTitle"
+                color={colors.textPrimary}
+                style={styles.sectionLabel}
+              >
                 Transfer To
               </CustomAppText>
 
               <View style={styles.infoCard}>
                 <View style={styles.infoRow}>
-                  <CustomAppText style={styles.infoLabel}>Name</CustomAppText>
-                  <CustomAppText style={styles.infoValue}>
+                  <CustomAppText variant="bodyMedium" color={colors.textMuted}>
+                    Name
+                  </CustomAppText>
+                  <CustomAppText variant="bodyMedium">
                     John Doe
                   </CustomAppText>
                 </View>
 
                 <View style={styles.infoRow}>
-                  <CustomAppText style={styles.infoLabel}>Company</CustomAppText>
-                  <CustomAppText style={styles.infoValue}>
+                  <CustomAppText variant="bodyMedium" color={colors.textMuted}>
+                    Company
+                  </CustomAppText>
+                  <CustomAppText variant="bodyMedium">
                     Salary Hero
                   </CustomAppText>
                 </View>
 
                 <View style={styles.infoRow}>
-                  <CustomAppText style={styles.infoLabel}>Bank</CustomAppText>
-                  <CustomAppText style={styles.infoValue}>SCB</CustomAppText>
+                  <CustomAppText variant="bodyMedium" color={colors.textMuted}>
+                    Bank
+                  </CustomAppText>
+                  <CustomAppText variant="bodyMedium">
+                    SCB
+                  </CustomAppText>
                 </View>
 
                 <View style={styles.infoRow}>
-                  <CustomAppText style={styles.infoLabel}>
+                  <CustomAppText variant="bodyMedium" color={colors.textMuted}>
                     Bank Account
                   </CustomAppText>
-                  <CustomAppText style={styles.infoValue}>
+                  <CustomAppText variant="bodyMedium">
                     XXX-XXX-2231
                   </CustomAppText>
                 </View>
 
                 <View style={[styles.infoRow, styles.lastInfoRow]}>
-                  <CustomAppText style={styles.infoLabel}>Fee</CustomAppText>
-                  <CustomAppText style={styles.feeValue}>
-                    -${FEE_AMOUNT}
+                  <CustomAppText variant="bodyMedium" color={colors.textMuted}>
+                    Fee
+                  </CustomAppText>
+                  <CustomAppText
+                    variant="bodyMedium"
+                    color={colors.primary}
+                  >
+                    -{formatCurrency(FEE_AMOUNT)}
                   </CustomAppText>
                 </View>
               </View>
             </View>
 
-            <TouchableOpacity
-              activeOpacity={0.85}
-              style={[
-                styles.withdrawButton,
-                isButtonDisabled && styles.withdrawButtonDisabled,
-              ]}
+            <CustomButton
+              title="Withdraw"
               disabled={isButtonDisabled}
               onPress={handleSubmit(onSubmit)}
-            >
-              <CustomAppText style={styles.withdrawButtonText}>
-                Withdraw
-              </CustomAppText>
-            </TouchableOpacity>
+            />
           </ScrollView>
         </View>
       </SafeAreaView>

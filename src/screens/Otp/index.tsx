@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   View,
-  TouchableOpacity,
   StatusBar,
   KeyboardAvoidingView,
   Platform,
@@ -15,6 +14,7 @@ import CustomHeaderArrow from '../../components/CustomHeaderArrow';
 import CustomAuthHeader from '../../components/CustomAuthHeader';
 import CustomInput from '../../components/CustomInput';
 import CustomAuthCard from '../../components/CustomAuthCard';
+import CustomButton from '../../components/CustomButton';
 import CustomLoadingOverlay from '../../components/CustomLoadingOverlay';
 
 import { colors } from '../../theme/colors';
@@ -48,7 +48,7 @@ const OtpScreen = ({ navigation, route }: Props) => {
 
       <SafeAreaView
         edges={['left', 'right', 'bottom']}
-        style={{ flex: 1, backgroundColor: colors.background }}
+        style={styles.safeArea}
       >
         <KeyboardAvoidingView
           style={styles.container}
@@ -92,47 +92,43 @@ const OtpScreen = ({ navigation, route }: Props) => {
               />
 
               <View style={styles.row}>
-                <CustomAppText style={styles.refText}>
+                <CustomAppText
+                  variant="caption"
+                  color={colors.textMuted}
+                >
                   Ref Code: {refCode}
                 </CustomAppText>
 
-                <TouchableOpacity
+                <View
                   style={[
                     styles.resendContainer,
-                    isResendDisabled && { opacity: 0.5 },
+                    isResendDisabled && styles.resendDisabled,
                   ]}
-                  onPress={handleResend}
-                  activeOpacity={0.8}
-                  disabled={isResendDisabled}
                 >
                   <MaterialIcons
                     name="refresh"
                     size={20}
                     color={colors.textMuted}
                   />
-                  <CustomAppText style={styles.resendText}>
+
+                  <CustomAppText
+                    variant="caption"
+                    color={colors.textMuted}
+                    style={styles.resendText}
+                    onPress={handleResend}
+                  >
                     {resendText}
                   </CustomAppText>
-                </TouchableOpacity>
+                </View>
               </View>
             </View>
 
-            <TouchableOpacity
-              style={[styles.button, isLoading && styles.buttonDisabled]}
+            <CustomButton
+              title="Next"
               disabled={isLoading}
-              activeOpacity={0.8}
               onPress={handleSubmit(onSubmit)}
-            >
-              <CustomAppText
-                variant="button"
-                style={[
-                  styles.buttonText,
-                  isLoading && styles.buttonTextDisabled,
-                ]}
-              >
-                Next
-              </CustomAppText>
-            </TouchableOpacity>
+              containerStyle={styles.button}
+            />
           </CustomAuthCard>
         </KeyboardAvoidingView>
 

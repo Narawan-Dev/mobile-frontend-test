@@ -13,10 +13,6 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   title: {
-    fontSize: 24,
-    lineHeight: 30,
-    color: colors.textPrimary,
-    fontWeight: '700',
     marginBottom: 28,
   },
   listArea: {
@@ -33,12 +29,6 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-  },
-  itemText: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: colors.textPrimary,
-    fontWeight: '400',
   },
   divider: {
     height: 1,
