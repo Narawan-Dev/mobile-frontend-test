@@ -1,108 +1,196 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# React Native On-Demand Salary App
 
-# Getting Started
+This is a React Native application built using `@react-native-community/cli`.
+The app simulates a fintech product that allows users to check their available salary and withdraw money on demand.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+---
+
+# 📱 Features
+
+* Sign in with phone number (OTP)
+* Passcode authentication (create / confirm / enter)
+* View available balance
+* Withdraw salary (up to 50% of available balance)
+* View transaction history
+* Secure storage for authentication
+
+---
+
+# 🧱 Tech Stack
+
+- React Native CLI (native project structure)
+- TypeScript
+- Redux Toolkit for state management
+- React Hook Form for form handling & validation
+- React Navigation (stack + tab navigators)
+- react-native-config for environment variables
+
+---
+
+
+# 📂 Project Structure
+
+```
+src/
+ ├── assets/         # images, fonts
+ ├── components/     # Reusable UI components (CustomButton, CustomInput, etc.)
+ ├── config/         # Environment and config helpers
+ ├── constants/      # App constants
+ ├── navigation/     # Navigation setup (AppNavigator, MainTabNavigator)
+ ├── screens/        # Screen components (SignIn, Otp, Home, Withdraw, etc.)
+ ├── services/       # API services & secure storage
+ ├── store/          # Redux store, slices, thunks
+ ├── theme/          # Colors, fonts, typography
+ ├── types/          # Shared TypeScript types
+ └── utils/          # Small helpers (auth, date, number)
+```
+
+Example constants:
+
+* Phone length, passcode length, etc.
+
+---
+
+# ⚙️ Installation
+
+Install dependencies:
+
+```sh
+npm install
+# or
+yarn install
+```
+
+---
+
+# 🚀 Getting Started
 
 ## Step 1: Start Metro
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
-
-To start the Metro dev server, run the following command from the root of your React Native project:
-
 ```sh
-# Using npm
 npm start
-
-# OR using Yarn
+# or
 yarn start
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## Step 2: Run the app
 
 ### Android
 
 ```sh
-# Using npm
 npm run android
-
-# OR using Yarn
+# or
 yarn android
 ```
 
 ### iOS
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+Install CocoaPods (first time only):
 
 ```sh
 bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
 bundle exec pod install
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+Then run:
 
 ```sh
-# Using npm
 npm run ios
-
-# OR using Yarn
+# or
 yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+---
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+# 🔐 Environment Variables
 
-## Step 3: Modify your app
+This project uses environment variables via `react-native-config`.
 
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
-
-## Environment Variables
-
-This project uses environment variables.
-
-### Step 1: Create `.env` file
-
-Create a `.env` file in the root of the project by copying from `.env.example`:
+## Step 1: Create `.env`
 
 ```sh
 cp .env.example .env
+```
+
+## Step 2: Configure values
+
+Example:
+
+```
+API_BASE_URL=https://your-api-url.com
+```
+
+Used in code via:
+
+```ts
+Config.API_BASE_URL
+```
+
+---
+
+# 💡 Business Logic
+
+* Users can withdraw **up to 50% of their available balance**
+* Withdrawal validation is handled on the client side
+* Balance is fetched from backend and stored in global state
+
+---
+
+# 🧠 State Management
+
+* Redux Toolkit is used for global state
+* Auth state includes:
+
+  * phone
+  * authentication status
+  * passcode status
+  * available balance
+* Form state is handled using React Hook Form
+
+---
+
+# 🎨 Styling
+
+* Centralized color system
+* Reusable UI components (Input, Button, Text)
+* Clean and consistent design structure
+
+---
+
+# 🧪 Validation
+
+* Phone number must match Thai format (10 digits starting with 0)
+* Withdrawal amount must not exceed allowed limit
+* Passcode length validation applied
+
+---
+
+# 🔄 Development
+
+* Fast Refresh enabled for instant UI updates
+* Full reload:
+
+  * Android: press `R` twice
+  * iOS: press `R`
+
+---
+
+# 🛠 Troubleshooting
+
+If you encounter issues, please refer to:
+https://reactnative.dev/docs/troubleshooting
+
+---
+
+# 📚 Learn More
+
+* https://reactnative.dev
+* https://reactnative.dev/docs/getting-started
+
+---
+
+# ✅ Notes
+
+* Make sure `.env` is configured before running the app
+* Ensure all dependencies are installed before starting Metro
+* Works on both Android and iOS
