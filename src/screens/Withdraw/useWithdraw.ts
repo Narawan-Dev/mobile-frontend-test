@@ -94,7 +94,7 @@ const useWithdraw = () => {
 
       Alert.alert('Failed', result?.message || 'Withdrawal failed');
     } catch (error) {
-      Alert.alert('Error', 'Unable to complete withdrawal');
+      Alert.alert('Error', (error as Error).message || 'Unable to complete withdrawal');
     } finally {
       setLoading(false);
     }

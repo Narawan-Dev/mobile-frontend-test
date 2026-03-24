@@ -107,8 +107,8 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
 
       setRefCode(generateRef());
       setResendCountdown(RESEND_COOLDOWN);
-    } catch {
-      Alert.alert('Error', 'Something went wrong while resending OTP.');
+    } catch (error) {
+      Alert.alert('Error', (error as Error).message || 'Something went wrong while resending OTP.');
     } finally {
       setIsResending(false);
     }
