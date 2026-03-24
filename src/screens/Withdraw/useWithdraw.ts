@@ -7,6 +7,7 @@ import { useAppSelector } from '../../store/hooks';
 import { userApi } from '../../services/api/userApi';
 import { WithdrawFormValues } from './types';
 import * as secureAuth from '../../services/storage/secureAuth';
+import { formatDecimalAmount, sanitizeDecimalInput } from '../../utils/number';
 
 const useWithdraw = () => {
   const [loading, setLoading] = useState(false);
@@ -36,12 +37,11 @@ const useWithdraw = () => {
     text: string,
     onChange: (value: string) => void,
   ) => {
-    const cleaned = text.replace(/[^0-9]/g, '');
-    onChange(cleaned);
+    onChange(sanitizeDecimalInput(text, 2));
   };
 
   const getDisplayAmount = (value: string) => {
-    return value ? Number(value).toLocaleString() : '';
+    return formatDecimalAmount(value);
   };
 
   const onSubmit = async (data: WithdrawFormValues) => {
@@ -85,6 +85,8 @@ const useWithdraw = () => {
   const amountRules = {
     required: 'Please enter withdrawal amount',
     validate: {
+      validNumber: (value: string) =>
+        !isNaN(Number(value)) || 'Invalid amount',
       greaterThanZero: (value: string) =>
         Number(value) > 0 || 'Amount must be greater than 0',
       maxAvailable: (value: string) =>
