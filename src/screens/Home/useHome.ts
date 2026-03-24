@@ -30,7 +30,7 @@ const useHome = () => {
       setUserName(
         profile?.data?.firstname
           ? `${profile.data.firstname} ${profile.data.lastname ?? ''}`.trim()
-          : profile?.data?.email ?? '',
+          : '',
       );
 
       const transactionsRes = await userApi.getTransactions(token);

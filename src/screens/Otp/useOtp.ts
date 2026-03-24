@@ -1,34 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import { useForm } from 'react-hook-form';
 
-import { OTP_LENGTH } from '../../constants/app';
+import { OTP_LENGTH, RESEND_COOLDOWN } from '../../constants/app';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { requestOtp, signInWithPhone } from '../../store/thunks/authThunks';
-import { OtpFormValues, Props } from './types';
+import { OtpFormValues, UseOtpParams } from './types';
 
-type UseOtpParams = Pick<Props, 'navigation' | 'route'>;
+const generateRef = () =>
+  Math.random().toString(36).substring(2, 8).toUpperCase();
+
+const OTP_ERROR_MESSAGE = `Please enter the full ${OTP_LENGTH}-digit OTP.`;
 
 export const useOtp = ({ navigation, route }: UseOtpParams) => {
-  const generateRef = () => {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
-  };
-
   const { phone } = route.params;
   const dispatch = useAppDispatch();
   const { hasPin } = useAppSelector(state => state.auth);
 
-  console.log('hasPin from store:', hasPin);
-
   const [refCode, setRefCode] = useState(generateRef());
-  const [submitError, setSubmitError] = useState('');
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(0);
 
   const {
     control,
     handleSubmit,
     setValue,
-    setError,
     clearErrors,
     formState: { errors },
   } = useForm<OtpFormValues>({
@@ -39,58 +36,73 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
     reValidateMode: 'onChange',
   });
 
+  useEffect(() => {
+    if (resendCountdown <= 0) return;
+
+    const timer = setInterval(() => {
+      setResendCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [resendCountdown]);
+
   const isLoading = isSigningIn || isResending;
+  const isResendDisabled = isLoading || resendCountdown > 0;
 
   const otpRules = {
     required: 'OTP is required',
-    validate: (value: string) =>
-      value.length === OTP_LENGTH ||
-      `Please enter the full ${OTP_LENGTH}-digit OTP.`,
+    minLength: {
+      value: OTP_LENGTH,
+      message: OTP_ERROR_MESSAGE,
+    },
+    maxLength: {
+      value: OTP_LENGTH,
+      message: OTP_ERROR_MESSAGE,
+    },
   };
 
-  const onSubmit = async (data: OtpFormValues) => {
-    if (data.otp.length !== OTP_LENGTH) {
-      setError('otp', {
-        type: 'manual',
-        message: `Please enter the full ${OTP_LENGTH}-digit OTP.`,
-      });
-      return;
-    }
-
-    setSubmitError('');
+  const onSubmit = async ({ otp }: OtpFormValues) => {
     setIsSigningIn(true);
 
     try {
-      const result = await dispatch(signInWithPhone(phone, data.otp));
-      console.log('Sign-in result:', result);
+      const result = await dispatch(signInWithPhone(phone, otp));
 
-      if (result?.success) {
-        console.log('Sign-in successful, hasPin:', hasPin);
-        if (hasPin) {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'MainTab' }],
-          });
-          return;
-        }
+      if (!result?.success) {
+        Alert.alert(
+          'Error',
+          result?.message || 'Invalid OTP. Please try again.',
+        );
+        return;
+      }
 
-        navigation.navigate('Passcode', {
-          mode: 'create',
+      if (hasPin) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'MainTab' }],
         });
         return;
       }
 
-      setSubmitError(result?.message || 'Invalid OTP. Please try again.');
-    } catch (error) {
-      setSubmitError('Something went wrong. Please try again.');
+      navigation.navigate('Passcode', {
+        mode: 'create',
+      });
+    } catch {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
     } finally {
-      console.log('Sign-in process completed');
       setIsSigningIn(false);
     }
   };
 
   const handleResend = async () => {
-    setSubmitError('');
+    if (isResendDisabled) return;
+
     setValue('otp', '');
     clearErrors('otp');
     setIsResending(true);
@@ -98,14 +110,18 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
     try {
       const result = await dispatch(requestOtp(phone));
 
-      if (result?.success) {
-        setRefCode(generateRef());
+      if (!result?.success) {
+        Alert.alert(
+          'Error',
+          result?.message || 'Failed to resend OTP. Please try again.',
+        );
         return;
       }
 
-      setSubmitError(result?.message || 'Failed to resend OTP. Please try again.');
-    } catch (error) {
-      setSubmitError('Something went wrong while resending OTP.');
+      setRefCode(generateRef());
+      setResendCountdown(RESEND_COOLDOWN);
+    } catch {
+      Alert.alert('Error', 'Something went wrong while resending OTP.');
     } finally {
       setIsResending(false);
     }
@@ -118,20 +134,21 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
     const cleaned = text.replace(/\D/g, '').slice(0, OTP_LENGTH);
     onChange(cleaned);
 
-    if (submitError) {
-      setSubmitError('');
-    }
-
     if (errors.otp) {
       clearErrors('otp');
     }
   };
 
+  const resendText = isResending
+    ? 'Resending...'
+    : resendCountdown > 0
+    ? `Resend in ${resendCountdown}s`
+    : 'Resend OTP';
+
   return {
     control,
     handleSubmit,
     errors,
-    submitError,
     isLoading,
     isResending,
     refCode,
@@ -139,5 +156,8 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
     onSubmit,
     handleResend,
     handleOtpChange,
+    resendCountdown,
+    isResendDisabled,
+    resendText,
   };
 };

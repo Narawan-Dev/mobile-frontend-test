@@ -5,3 +5,5 @@ export const PHONE_LENGTH = 10;
 export const SUBMIT_DELAY = 200;
 
 export const FEE_AMOUNT = 5;
+
+export const RESEND_COOLDOWN = 30;

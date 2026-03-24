@@ -18,33 +18,41 @@ import { styles } from './styles';
 import { Props } from './types';
 import { usePasscode } from './usePasscode';
 
+const KEYPAD_ROWS = [
+  ['1', '2', '3'],
+  ['4', '5', '6'],
+  ['7', '8', '9'],
+];
+
 const PasscodeScreen = ({ navigation, route }: Props) => {
   const insets = useSafeAreaInsets();
 
   const {
     passcode,
-    getTitle,
-    getSubtitle,
+    isSubmitting,
+    title,
+    subtitle,
     handlePressNumber,
     handleDelete,
   } = usePasscode({ navigation, route });
 
-  const renderDot = (filled: boolean, index: number) => {
-    return <View key={index} style={[styles.dot, filled && styles.dotFilled]} />;
-  };
+  const isDeleteDisabled = passcode.length === 0 || isSubmitting;
 
-  const renderNumberButton = (value: string) => {
-    return (
-      <TouchableOpacity
-        key={value}
-        style={styles.key}
-        activeOpacity={0.7}
-        onPress={() => handlePressNumber(value)}
-      >
-        <CustomAppText style={styles.keyText}>{value}</CustomAppText>
-      </TouchableOpacity>
-    );
-  };
+  const renderDot = (filled: boolean, index: number) => (
+    <View key={index} style={[styles.dot, filled && styles.dotFilled]} />
+  );
+
+  const renderNumberButton = (value: string) => (
+    <TouchableOpacity
+      key={value}
+      style={[styles.key, isSubmitting && styles.keyDisabled]}
+      activeOpacity={0.7}
+      onPress={() => handlePressNumber(value)}
+      disabled={isSubmitting}
+    >
+      <CustomAppText style={styles.keyText}>{value}</CustomAppText>
+    </TouchableOpacity>
+  );
 
   return (
     <>
@@ -69,11 +77,11 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
               </View>
 
               <CustomAppText variant="title" style={styles.title}>
-                {getTitle()}
+                {title}
               </CustomAppText>
 
               <CustomAppText variant="subtitle" style={styles.subtitle}>
-                {getSubtitle()}
+                {subtitle}
               </CustomAppText>
 
               <View style={styles.dotsWrapper}>
@@ -89,23 +97,11 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
                 { paddingBottom: Math.max(insets.bottom, 12) },
               ]}
             >
-              <View style={styles.row}>
-                {renderNumberButton('1')}
-                {renderNumberButton('2')}
-                {renderNumberButton('3')}
-              </View>
-
-              <View style={styles.row}>
-                {renderNumberButton('4')}
-                {renderNumberButton('5')}
-                {renderNumberButton('6')}
-              </View>
-
-              <View style={styles.row}>
-                {renderNumberButton('7')}
-                {renderNumberButton('8')}
-                {renderNumberButton('9')}
-              </View>
+              {KEYPAD_ROWS.map(row => (
+                <View key={row.join('-')} style={styles.row}>
+                  {row.map(renderNumberButton)}
+                </View>
+              ))}
 
               <View style={styles.row}>
                 <View style={styles.keyEmpty} />
@@ -113,9 +109,10 @@ const PasscodeScreen = ({ navigation, route }: Props) => {
                 {renderNumberButton('0')}
 
                 <TouchableOpacity
-                  style={styles.key}
+                  style={[styles.key, isDeleteDisabled && styles.keyDisabled]}
                   activeOpacity={0.7}
                   onPress={handleDelete}
+                  disabled={isDeleteDisabled}
                 >
                   <MaterialIcons
                     name="backspace"

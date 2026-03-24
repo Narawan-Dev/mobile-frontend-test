@@ -6,3 +6,5 @@ export type Props = NativeStackScreenProps<RootStackParamList, 'Otp'>;
 export type OtpFormValues = {
   otp: string;
 };
+
+export type UseOtpParams = Pick<Props, 'navigation' | 'route'>;

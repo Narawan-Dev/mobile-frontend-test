@@ -11,9 +11,9 @@ import { RootStackParamList } from './types';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
-  const isAuthenticated = useAppSelector(s => s.auth.isAuthenticated);
-  const hasPin = useAppSelector(s => s.auth.hasPin);
-  const isPasscodeVerified = useAppSelector(s => s.auth.isPasscodeVerified);
+  const { isAuthenticated, hasPin, isPasscodeVerified } = useAppSelector(
+    state => state.auth,
+  );
 
   let initialRoute: keyof RootStackParamList = 'SignIn';
   let passcodeMode: 'create' | 'enter' = 'create';

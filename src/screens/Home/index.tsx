@@ -43,7 +43,7 @@ const HomeScreen = () => {
 
               <View style={styles.profileRow}>
                 <CustomAppText style={styles.userName}>
-                  {userName || 'User'}
+                  {userName || ''}
                 </CustomAppText>
 
                 <View style={styles.avatar}>

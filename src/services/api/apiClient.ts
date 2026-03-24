@@ -5,8 +5,7 @@ import * as secureAuth from '../storage/secureAuth';
 import { store } from '../../store';
 import { logout } from '../../store/slices/authSlice';
 import { isTokenExpired } from '../../utils/auth';
-
-console.log('ENV.API_BASE_URL:', ENV.API_BASE_URL);
+import { resetToSignIn } from '../../navigation/RootNavigation';
 
 export const apiClient = axios.create({
   baseURL: ENV.API_BASE_URL,
@@ -16,20 +15,41 @@ export const apiClient = axios.create({
   },
 });
 
+let isLoggingOut = false;
+
+const forceLogout = async () => {
+  if (isLoggingOut) return;
+
+  isLoggingOut = true;
+
+  try {
+    await secureAuth.clearAuth();
+    store.dispatch(logout());
+    resetToSignIn();
+  } finally {
+    isLoggingOut = false;
+  }
+};
+
 apiClient.interceptors.request.use(
   async config => {
     const token = await secureAuth.getToken();
 
-    if (token && isTokenExpired(token)) {
-      await secureAuth.clearToken();
-      store.dispatch(logout());
-      throw new Error('SESSION_EXPIRED');
+    if (!token) {
+      return config;
     }
 
-    if (token) {
-      config.headers = config.headers ?? {};
-      config.headers.Authorization = `Bearer ${token}`;
+    if (isTokenExpired(token)) {
+      await forceLogout();
+
+      return Promise.reject({
+        code: 'SESSION_EXPIRED',
+        message: 'Session expired. Please sign in again.',
+      });
     }
+
+    config.headers = config.headers ?? {};
+    config.headers.Authorization = `Bearer ${token}`;
 
     return config;
   },
@@ -42,11 +62,12 @@ apiClient.interceptors.response.use(
     const status = error?.response?.status;
 
     if (status === 401) {
-      try {
-        await secureAuth.clearToken();
-      } finally {
-        store.dispatch(logout());
-      }
+      await forceLogout();
+
+      return Promise.reject({
+        code: 'SESSION_EXPIRED',
+        message: 'Session expired. Please sign in again.',
+      });
     }
 
     return Promise.reject(error);

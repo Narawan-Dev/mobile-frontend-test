@@ -6,11 +6,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import BootSplash from 'react-native-bootsplash';
 
 import AppNavigator from './src/navigation/AppNavigator';
+import { navigationRef } from './src/navigation/RootNavigation';
 import { store } from './src/store';
 import { hydrateAuthFromStorage } from './src/store/thunks/authThunks';
 import { colors } from './src/theme/colors';
 
 function App() {
+  const [rehydrated, setRehydrated] = useState(false);
+
   useEffect(() => {
     const init = async () => {
       try {
@@ -24,15 +27,13 @@ function App() {
     init();
   }, []);
 
-  const [rehydrated, setRehydrated] = useState(false);
-
   if (!rehydrated) return null;
 
   return (
     <Provider store={store}>
       <SafeAreaProvider>
         <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
           <AppNavigator />
         </NavigationContainer>
       </SafeAreaProvider>

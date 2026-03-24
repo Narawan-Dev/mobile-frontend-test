@@ -6,9 +6,9 @@ export type AuthState = {
   isHydrated: boolean;
   loading: boolean;
   error: string | null;
-  hasPin: boolean;
   isPasscodeVerified: boolean;
   availableBalance: number | null;
+  hasPin: boolean;
 };
 
 const initialState: AuthState = {
@@ -17,9 +17,9 @@ const initialState: AuthState = {
   isHydrated: false,
   loading: false,
   error: null,
-  hasPin: false,
   isPasscodeVerified: false,
   availableBalance: null,
+  hasPin: false,
 };
 
 const authSlice = createSlice({
@@ -53,23 +53,23 @@ const authSlice = createSlice({
       action: PayloadAction<{
         phone: string | null;
         isAuthenticated: boolean;
-        hasPin?: boolean;
+        hasPin: boolean;
       }>,
     ) => {
       state.phone = action.payload.phone;
-      state.hasPin = action.payload.hasPin ?? false;
       state.isAuthenticated = action.payload.isAuthenticated;
+      state.hasPin = action.payload.hasPin;
       state.isHydrated = true;
       state.loading = false;
       state.error = null;
     },
 
-    setHasPin: (state, action: PayloadAction<boolean>) => {
-      state.hasPin = action.payload;
-    },
-
     setPasscodeVerified: (state, action: PayloadAction<boolean>) => {
       state.isPasscodeVerified = action.payload;
+    },
+    
+    setHasPin: (state, action: PayloadAction<boolean>) => {
+      state.hasPin = action.payload;
     },
 
     clearAuthError: state => {
@@ -88,6 +88,7 @@ const authSlice = createSlice({
       state.error = null;
       state.isPasscodeVerified = false;
       state.availableBalance = null;
+      state.hasPin = false;
     },
   },
 });
@@ -98,8 +99,8 @@ export const {
   signInFailure,
   otpRequestSuccess,
   hydrateAuth,
-  setHasPin,
   setPasscodeVerified,
+  setHasPin,
   clearAuthError,
   setAvailableBalance,
   logout,

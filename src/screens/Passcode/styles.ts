@@ -89,6 +89,9 @@ export const styles = StyleSheet.create({
     borderColor: colors.border,
     backgroundColor: colors.background,
   },
+  keyDisabled: {
+    opacity: 0.4,
+  },
   keyText: {
     fontSize: 24,
     color: colors.textPrimary,

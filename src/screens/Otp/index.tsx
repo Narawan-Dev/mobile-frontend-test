@@ -28,14 +28,14 @@ const OtpScreen = ({ navigation, route }: Props) => {
     control,
     handleSubmit,
     errors,
-    submitError,
     isLoading,
-    isResending,
     refCode,
     otpRules,
     onSubmit,
     handleResend,
     handleOtpChange,
+    isResendDisabled,
+    resendText,
   } = useOtp({ navigation, route });
 
   return (
@@ -91,28 +91,19 @@ const OtpScreen = ({ navigation, route }: Props) => {
                 )}
               />
 
-              {!errors.otp?.message && !!submitError && (
-                <CustomAppText
-                  style={{
-                    marginTop: 8,
-                    fontSize: 12,
-                    color: colors.error ?? '#DC2626',
-                  }}
-                >
-                  {submitError}
-                </CustomAppText>
-              )}
-
               <View style={styles.row}>
                 <CustomAppText style={styles.refText}>
                   Ref Code: {refCode}
                 </CustomAppText>
 
                 <TouchableOpacity
-                  style={styles.resendContainer}
+                  style={[
+                    styles.resendContainer,
+                    isResendDisabled && { opacity: 0.5 },
+                  ]}
                   onPress={handleResend}
                   activeOpacity={0.8}
-                  disabled={isLoading}
+                  disabled={isResendDisabled}
                 >
                   <MaterialIcons
                     name="refresh"
@@ -120,17 +111,14 @@ const OtpScreen = ({ navigation, route }: Props) => {
                     color={colors.textMuted}
                   />
                   <CustomAppText style={styles.resendText}>
-                    {isResending ? 'Resending...' : 'Resend OTP'}
+                    {resendText}
                   </CustomAppText>
                 </TouchableOpacity>
               </View>
             </View>
 
             <TouchableOpacity
-              style={[
-                styles.button,
-                isLoading && styles.buttonDisabled,
-              ]}
+              style={[styles.button, isLoading && styles.buttonDisabled]}
               disabled={isLoading}
               activeOpacity={0.8}
               onPress={handleSubmit(onSubmit)}
