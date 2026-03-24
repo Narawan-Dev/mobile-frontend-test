@@ -2,18 +2,24 @@ import { useState } from 'react';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useForm } from 'react-hook-form';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 import { useAppSelector } from '../../store/hooks';
 import { userApi } from '../../services/api/userApi';
 import { WithdrawFormValues } from './types';
 import * as secureAuth from '../../services/storage/secureAuth';
-import { formatDecimalAmount, sanitizeDecimalInput } from '../../utils/number';
+import {
+  formatDecimalAmount,
+  sanitizeDecimalInput,
+  normalizeDecimalAmount,
+} from '../../utils/number';
+import { MainTabParamList } from '../../navigation/types';
 
 const useWithdraw = () => {
   const [loading, setLoading] = useState(false);
 
   const availableBalance = useAppSelector(s => s.auth.availableBalance ?? 0);
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
 
   const {
     control,
@@ -21,6 +27,7 @@ const useWithdraw = () => {
     formState: { errors },
     reset,
     watch,
+    setValue,
   } = useForm<WithdrawFormValues>({
     defaultValues: {
       amount: '',
@@ -40,6 +47,14 @@ const useWithdraw = () => {
     onChange(sanitizeDecimalInput(text, 2));
   };
 
+  const handleAmountBlur = (
+    value: string,
+    onChange: (value: string) => void,
+  ) => {
+    const normalized = normalizeDecimalAmount(value, 2);
+    onChange(normalized);
+  };
+
   const getDisplayAmount = (value: string) => {
     return formatDecimalAmount(value);
   };
@@ -55,7 +70,13 @@ const useWithdraw = () => {
         return;
       }
 
-      const result = await userApi.withdraw(token, data.amount);
+      const normalizedAmount = normalizeDecimalAmount(data.amount, 2);
+
+      setValue('amount', normalizedAmount, {
+        shouldValidate: true,
+      });
+
+      const result = await userApi.withdraw(token, normalizedAmount);
 
       if (result?.message === 'success') {
         reset();
@@ -85,13 +106,18 @@ const useWithdraw = () => {
   const amountRules = {
     required: 'Please enter withdrawal amount',
     validate: {
-      validNumber: (value: string) =>
-        !isNaN(Number(value)) || 'Invalid amount',
+      validNumber: (value: string) => !isNaN(Number(value)) || 'Invalid amount',
       greaterThanZero: (value: string) =>
         Number(value) > 0 || 'Amount must be greater than 0',
-      maxAvailable: (value: string) =>
-        Number(value) <= availableBalance ||
-        `Amount cannot exceed available balance ($${availableBalance.toLocaleString()})`,
+      maxAvailable: (value: string) => {
+        const num = Number(value);
+        const max = (availableBalance ?? 0) / 2;
+
+        return (
+          num <= max ||
+          `Amount cannot exceed available balance ($${max.toLocaleString()})`
+        );
+      },
     },
   };
 
@@ -99,12 +125,11 @@ const useWithdraw = () => {
     control,
     errors,
     loading,
-    availableBalance,
-    watchedAmount,
     isButtonDisabled,
     handleSubmit,
     onSubmit,
     handleAmountChange,
+    handleAmountBlur,
     getDisplayAmount,
     amountRules,
   };

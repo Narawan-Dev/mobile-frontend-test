@@ -7,11 +7,10 @@ import CustomAppText from '../../components/CustomAppText';
 import { styles } from './styles';
 import { colors } from '../../theme/colors';
 
-import { Props } from './types';
 import { useSetting } from './useSetting';
 
-const SettingScreen = ({ navigation }: Props) => {
-  const { handleResetPin, handleLogout } = useSetting({ navigation });
+const SettingScreen = () => {
+  const { handleResetPin, handleLogout } = useSetting();
 
   return (
     <>

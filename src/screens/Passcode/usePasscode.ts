@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { CommonActions } from '@react-navigation/native';
 
 import { useAppDispatch } from '../../store/hooks';
-import { setHasPin, setPasscodeVerified } from '../../store/slices/authSlice';
+import {
+  setHasPin,
+  setPasscodeMode,
+  setPasscodeVerified,
+} from '../../store/slices/authSlice';
 import * as secureAuth from '../../services/storage/secureAuth';
 import { PASSCODE_LENGTH, SUBMIT_DELAY } from '../../constants/app';
 import { Props } from './types';
@@ -44,15 +47,6 @@ export const usePasscode = ({ navigation, route }: UsePasscodeParams) => {
     ? 'Please enter your passcode to continue'
     : 'Please re-enter your new PIN to confirm';
 
-  const resetToMainTab = () => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'MainTab' }],
-      }),
-    );
-  };
-
   const clearPasscode = () => {
     setPasscode('');
     setIsSubmitting(false);
@@ -87,7 +81,6 @@ export const usePasscode = ({ navigation, route }: UsePasscodeParams) => {
 
   const handlePasscodeSuccess = () => {
     clearPasscode();
-    resetToMainTab();
   };
 
   const showMissingPhoneAlert = () => {
@@ -128,6 +121,7 @@ export const usePasscode = ({ navigation, route }: UsePasscodeParams) => {
       await secureAuth.savePasscode(phone, passcode);
       dispatch(setHasPin(true));
       dispatch(setPasscodeVerified(true));
+      dispatch(setPasscodeMode(null));
       handlePasscodeSuccess();
     } catch {
       clearPasscode();
@@ -149,20 +143,12 @@ export const usePasscode = ({ navigation, route }: UsePasscodeParams) => {
       if (!storedPasscode) {
         dispatch(setHasPin(false));
         dispatch(setPasscodeVerified(false));
+        dispatch(setPasscodeMode('create'));
         clearPasscode();
 
         Alert.alert(
           'No Passcode',
           'No passcode is set for this account. Please create a new passcode.',
-          [
-            {
-              text: 'OK',
-              onPress: () =>
-                navigation.replace('Passcode', {
-                  mode: 'create',
-                }),
-            },
-          ],
         );
         return;
       }
@@ -173,6 +159,7 @@ export const usePasscode = ({ navigation, route }: UsePasscodeParams) => {
       }
 
       dispatch(setPasscodeVerified(true));
+      dispatch(setPasscodeMode(null));
       handlePasscodeSuccess();
     } catch {
       clearPasscode();
@@ -212,7 +199,6 @@ export const usePasscode = ({ navigation, route }: UsePasscodeParams) => {
     isConfirmMode,
     isEnterMode,
     initialPasscode,
-    dispatch,
     navigation,
   ]);
 

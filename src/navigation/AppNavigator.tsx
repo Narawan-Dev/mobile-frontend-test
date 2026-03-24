@@ -11,42 +11,42 @@ import { RootStackParamList } from './types';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
-  const { isAuthenticated, hasPin, isPasscodeVerified } = useAppSelector(
-    state => state.auth,
-  );
-
-  let initialRoute: keyof RootStackParamList = 'SignIn';
-  let passcodeMode: 'create' | 'enter' = 'create';
-
-  if (isAuthenticated) {
-    if (!hasPin) {
-      initialRoute = 'Passcode';
-      passcodeMode = 'create';
-    } else if (!isPasscodeVerified) {
-      initialRoute = 'Passcode';
-      passcodeMode = 'enter';
-    } else {
-      initialRoute = 'MainTab';
-    }
-  }
+  const { isAuthenticated, hasPin, isPasscodeVerified, passcodeMode } =
+    useAppSelector(state => state.auth);
 
   return (
     <Stack.Navigator
-      key={`${isAuthenticated}-${hasPin}-${isPasscodeVerified}`}
-      initialRouteName={initialRoute}
       screenOptions={{
         headerShown: false,
         animation: 'fade',
       }}
     >
-      <Stack.Screen name="SignIn" component={SignInScreen} />
-      <Stack.Screen name="Otp" component={OtpScreen} />
-      <Stack.Screen
-        name="Passcode"
-        component={PasscodeScreen}
-        initialParams={{ mode: passcodeMode }}
-      />
-      <Stack.Screen name="MainTab" component={MainTabNavigator} />
+      {!isAuthenticated ? (
+        <>
+          <Stack.Screen name="SignIn" component={SignInScreen} />
+          <Stack.Screen name="Otp" component={OtpScreen} />
+        </>
+      ) : passcodeMode === 'reset' ? (
+        <Stack.Screen
+          name="Passcode"
+          component={PasscodeScreen}
+          initialParams={{ mode: 'reset' }}
+        />
+      ) : !hasPin ? (
+        <Stack.Screen
+          name="Passcode"
+          component={PasscodeScreen}
+          initialParams={{ mode: 'create' }}
+        />
+      ) : !isPasscodeVerified ? (
+        <Stack.Screen
+          name="Passcode"
+          component={PasscodeScreen}
+          initialParams={{ mode: 'enter' }}
+        />
+      ) : (
+        <Stack.Screen name="MainTab" component={MainTabNavigator} />
+      )}
     </Stack.Navigator>
   );
 };

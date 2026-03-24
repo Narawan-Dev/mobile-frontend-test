@@ -5,7 +5,6 @@ import * as secureAuth from '../storage/secureAuth';
 import { store } from '../../store';
 import { logout } from '../../store/slices/authSlice';
 import { isTokenExpired } from '../../utils/auth';
-import { resetToSignIn } from '../../navigation/RootNavigation';
 
 export const apiClient = axios.create({
   baseURL: ENV.API_BASE_URL,
@@ -25,7 +24,6 @@ const forceLogout = async () => {
   try {
     await secureAuth.clearAuth();
     store.dispatch(logout());
-    resetToSignIn();
   } finally {
     isLoggingOut = false;
   }

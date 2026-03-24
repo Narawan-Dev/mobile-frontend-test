@@ -22,6 +22,7 @@ const WithdrawScreen = () => {
     handleSubmit,
     onSubmit,
     handleAmountChange,
+    handleAmountBlur,
     getDisplayAmount,
     amountRules,
   } = useWithdraw();
@@ -80,8 +81,13 @@ const WithdrawScreen = () => {
                       <View style={styles.amountInputContainer}>
                         <CustomInput
                           value={getDisplayAmount(value)}
-                          onBlur={onBlur}
-                          onChangeText={text => handleAmountChange(text, onChange)}
+                          onBlur={() => {
+                            handleAmountBlur(value, onChange);
+                            onBlur();
+                          }}
+                          onChangeText={text =>
+                            handleAmountChange(text, onChange)
+                          }
                           placeholder="0"
                           placeholderTextColor={colors.disabledText}
                           keyboardType="decimal-pad"

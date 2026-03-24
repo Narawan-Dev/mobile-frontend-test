@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import { useForm } from 'react-hook-form';
 
 import { OTP_LENGTH, RESEND_COOLDOWN } from '../../constants/app';
-import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { useAppDispatch } from '../../store/hooks';
 import { requestOtp, signInWithPhone } from '../../store/thunks/authThunks';
 import { OtpFormValues, UseOtpParams } from './types';
 
@@ -15,7 +15,6 @@ const OTP_ERROR_MESSAGE = `Please enter the full ${OTP_LENGTH}-digit OTP.`;
 export const useOtp = ({ navigation, route }: UseOtpParams) => {
   const { phone } = route.params;
   const dispatch = useAppDispatch();
-  const { hasPin } = useAppSelector(state => state.auth);
 
   const [refCode, setRefCode] = useState(generateRef());
   const [isSigningIn, setIsSigningIn] = useState(false);
@@ -81,18 +80,6 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
         );
         return;
       }
-
-      if (hasPin) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'MainTab' }],
-        });
-        return;
-      }
-
-      navigation.navigate('Passcode', {
-        mode: 'create',
-      });
     } catch {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     } finally {
@@ -127,10 +114,7 @@ export const useOtp = ({ navigation, route }: UseOtpParams) => {
     }
   };
 
-  const handleOtpChange = (
-    text: string,
-    onChange: (value: string) => void,
-  ) => {
+  const handleOtpChange = (text: string, onChange: (value: string) => void) => {
     const cleaned = text.replace(/\D/g, '').slice(0, OTP_LENGTH);
     onChange(cleaned);
 

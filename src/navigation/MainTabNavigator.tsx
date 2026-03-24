@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
 
 import HomeScreen from '../screens/Home';
@@ -11,8 +9,8 @@ import SettingScreen from '../screens/Setting';
 
 import { colors } from '../theme/colors';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { setPasscodeVerified } from '../store/slices/authSlice';
-import { MainTabParamList, MaterialIconName, RootStackParamList } from './types';
+import { setPasscodeMode, setPasscodeVerified } from '../store/slices/authSlice';
+import { MainTabParamList, MaterialIconName } from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -23,8 +21,6 @@ const TAB_ICONS: Record<keyof MainTabParamList, MaterialIconName> = {
 };
 
 const MainTabNavigator = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch();
 
   const { isAuthenticated, hasPin, isPasscodeVerified } = useAppSelector(
@@ -34,17 +30,14 @@ const MainTabNavigator = () => {
   const appStateRef = useRef<AppStateStatus>(AppState.currentState);
   const shouldRequirePasscode = isAuthenticated && hasPin;
 
-  const openPasscode = useCallback(() => {
-    const state = navigation.getState();
-    const currentRoute = state.routes[state.index]?.name;
-
-    if (currentRoute === 'Passcode') {
+  const lockAppWithPasscode = useCallback(() => {
+    if (!shouldRequirePasscode || !isPasscodeVerified) {
       return;
     }
 
+    dispatch(setPasscodeMode(null));
     dispatch(setPasscodeVerified(false));
-    navigation.navigate('Passcode', { mode: 'enter' });
-  }, [dispatch, navigation]);
+  }, [dispatch, isPasscodeVerified, shouldRequirePasscode]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
@@ -54,21 +47,15 @@ const MainTabNavigator = () => {
         (prevAppState === 'background' || prevAppState === 'inactive') &&
         nextAppState === 'active';
 
-      if (isReturningToForeground && shouldRequirePasscode) {
-        openPasscode();
+      if (isReturningToForeground) {
+        lockAppWithPasscode();
       }
 
       appStateRef.current = nextAppState;
     });
 
     return () => subscription.remove();
-  }, [openPasscode, shouldRequirePasscode]);
-
-  useEffect(() => {
-    if (shouldRequirePasscode && !isPasscodeVerified) {
-      openPasscode();
-    }
-  }, [isPasscodeVerified, openPasscode, shouldRequirePasscode]);
+  }, [lockAppWithPasscode]);
 
   return (
     <Tab.Navigator

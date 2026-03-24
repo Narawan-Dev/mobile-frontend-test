@@ -11,7 +11,7 @@ export type RootStackParamList = {
 };
 
 export type MainTabParamList = {
-  Home: undefined;
+  Home: { shouldRefetch?: boolean } | undefined;
   Withdraw: undefined;
   Setting: undefined;
 };

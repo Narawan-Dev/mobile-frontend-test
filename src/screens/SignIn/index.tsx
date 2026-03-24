@@ -29,7 +29,6 @@ const SignInScreen = ({ navigation }: Props) => {
     control,
     handleSubmit,
     errors,
-    isValid,
     loading,
     error,
     onSubmit,

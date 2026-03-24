@@ -1,14 +1,13 @@
 import { Alert } from 'react-native';
-import { CommonActions } from '@react-navigation/native';
 import { useAppDispatch } from '../../store/hooks';
-import { logout } from '../../store/slices/authSlice';
+import {
+  logout,
+  setPasscodeMode,
+  setPasscodeVerified,
+} from '../../store/slices/authSlice';
 import * as secureAuth from '../../services/storage/secureAuth';
 
-import { Props } from './types';
-
-type UseSettingParams = Pick<Props, 'navigation'>;
-
-export const useSetting = ({ navigation }: UseSettingParams) => {
+export const useSetting = () => {
   const dispatch = useAppDispatch();
 
   const handleResetPin = () => {
@@ -22,10 +21,10 @@ export const useSetting = ({ navigation }: UseSettingParams) => {
         },
         {
           text: 'Continue',
-          onPress: () =>
-            navigation.navigate('Passcode', {
-              mode: 'reset',
-            }),
+          onPress: () => {
+            dispatch(setPasscodeVerified(false));
+            dispatch(setPasscodeMode('reset'));
+          },
         },
       ],
       { cancelable: true },
@@ -50,17 +49,6 @@ export const useSetting = ({ navigation }: UseSettingParams) => {
               await secureAuth.clearPhone();
             } finally {
               dispatch(logout());
-
-              const parentNavigation = navigation.getParent();
-
-              if (parentNavigation) {
-                parentNavigation.dispatch(
-                  CommonActions.reset({
-                    index: 0,
-                    routes: [{ name: 'SignIn' }],
-                  }),
-                );
-              }
             }
           },
         },

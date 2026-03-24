@@ -6,7 +6,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import BootSplash from 'react-native-bootsplash';
 
 import AppNavigator from './src/navigation/AppNavigator';
-import { navigationRef } from './src/navigation/RootNavigation';
 import { store } from './src/store';
 import { hydrateAuthFromStorage } from './src/store/thunks/authThunks';
 import { colors } from './src/theme/colors';
@@ -33,7 +32,7 @@ function App() {
     <Provider store={store}>
       <SafeAreaProvider>
         <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
-        <NavigationContainer ref={navigationRef}>
+        <NavigationContainer>
           <AppNavigator />
         </NavigationContainer>
       </SafeAreaProvider>

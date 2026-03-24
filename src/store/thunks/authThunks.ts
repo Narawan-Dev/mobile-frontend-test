@@ -5,7 +5,7 @@ import {
   signInFailure,
   signInStart,
   signInSuccess,
-  hydrateAuth,
+  hydrateAuthState,
   setPasscodeVerified,
   setHasPin,
   otpRequestSuccess,
@@ -34,7 +34,6 @@ export const signInWithPhone = (phone: string, otp?: string) => {
 
       dispatch(signInSuccess({ phone }));
       dispatch(setHasPin(hasPin));
-
       dispatch(setPasscodeVerified(hasPin));
 
       return { success: true };
@@ -89,7 +88,7 @@ export const hydrateAuthFromStorage = () => {
       }
 
       dispatch(
-        hydrateAuth({
+        hydrateAuthState({
           phone: validToken ? phone : null,
           isAuthenticated: validToken,
           hasPin,
@@ -111,7 +110,7 @@ export const hydrateAuthFromStorage = () => {
       } catch {}
 
       dispatch(
-        hydrateAuth({
+        hydrateAuthState({
           phone: null,
           isAuthenticated: false,
           hasPin,

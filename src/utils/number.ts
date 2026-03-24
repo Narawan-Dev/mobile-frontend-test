@@ -51,3 +51,22 @@ export const formatDecimalAmount = (value: string) => {
 
   return formattedInteger;
 };
+
+export const normalizeDecimalAmount = (
+  value: string,
+  decimalPlaces = 2,
+) => {
+  if (!value) return '';
+
+  const cleaned = sanitizeDecimalInput(value, decimalPlaces);
+
+  if (!cleaned) return '';
+
+  const [integerPart = '0', decimalPart = ''] = cleaned.split('.');
+
+  const normalizedDecimal = decimalPart
+    .padEnd(decimalPlaces, '0')
+    .slice(0, decimalPlaces);
+
+  return `${Number(integerPart)}.${normalizedDecimal}`;
+};

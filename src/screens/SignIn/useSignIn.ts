@@ -13,7 +13,7 @@ const useSignIn = (navigation: SignInNavigationProp) => {
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<SignInFormValues>({
     mode: 'onBlur',
     reValidateMode: 'onChange',
@@ -56,7 +56,6 @@ const useSignIn = (navigation: SignInNavigationProp) => {
     control,
     handleSubmit,
     errors,
-    isValid,
     loading,
     error,
     onSubmit,
