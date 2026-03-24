@@ -108,7 +108,7 @@ const useWithdraw = () => {
         Number(value) > 0 || 'Amount must be greater than 0',
       maxAvailable: (value: string) => {
         const num = Number(value);
-        const max = (availableBalance ?? 0) / 2;
+        const max = (availableBalance ?? 0) * 0.5;
 
         return (
           num <= max ||
